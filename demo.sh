@@ -71,8 +71,8 @@ starcluster sshmaster $CLUSTERNAME 'python -c "from myria import *; MyriaQuery.s
 
 echo "*** Stage benchmarking scripts"
 starcluster put $CLUSTERNAME --node $CLUSTERNAME-master hybrid.py /root
-starcluster put $CLUSTERNAME --node $CLUSTERNAME-master myria-only.py /root
-starcluster put $CLUSTERNAME --node $CLUSTERNAME-master scidb-only.py /root
+starcluster put $CLUSTERNAME --node $CLUSTERNAME-master myria_only.py /root
+starcluster put $CLUSTERNAME --node $CLUSTERNAME-master scidb_only.py /root
 
 echo "***********************************************************************************"
 echo "*** NOTE: cluster is still running!"
@@ -87,7 +87,7 @@ then
 echo "*** Benchmarking Myria"
 EC2_NAME=$(starcluster listclusters | grep $CLUSTERNAME-master | tr -s ' ' | cut -d ' ' -f 5)
 starcluster sshmaster $CLUSTERNAME \
-  "python myria-only.py $PATIENTS $VECTOR_SIZE \
+  "python myria_only.py $PATIENTS $VECTOR_SIZE \
            --url http://$EC2_NAME:8753"
 
 fi
@@ -97,7 +97,7 @@ then
 
 echo "*** Benchmarking SciDB"
 starcluster sshmaster $CLUSTERNAME \
-  "python scidb-only.py $PATIENTS $VECTOR_SIZE --url http://localhost:8080"
+  "python scidb_only.py $PATIENTS $VECTOR_SIZE --url http://localhost:8080"
 
 fi
 

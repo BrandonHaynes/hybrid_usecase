@@ -325,6 +325,10 @@ def build_input(arguments):
 
 def restart_scidb(arguments):
     print 'Restarting SciDB'
+
+    #if arguments.fast:
+    #  return
+
     try:
         subprocess.check_output([arguments.scidb_bin, 'stopall', arguments.scidb_name], stderr=subprocess.STDOUT)
         subprocess.check_output([arguments.scidb_bin, 'startall', arguments.scidb_name], stderr=subprocess.STDOUT)
@@ -336,6 +340,10 @@ def restart_scidb(arguments):
 
 def warm_array(arguments):
     print 'Prescanned array'
+
+    if arguments.fast:
+      return
+
     try:
         subprocess.check_output([arguments.scidb_iquery, '-anq', 'scan({})'.format(arguments.input_array)], stderr=subprocess.STDOUT)
         subprocess.check_output([arguments.scidb_iquery, '-anq', "load_library('bin')"], stderr=subprocess.STDOUT)
@@ -367,6 +375,8 @@ def parse_arguments(arguments):
     parser.add_argument('--overlap-vectors', dest='overlap_vectors', type=int, default=0, help='Array overlap for input vectors')
     parser.add_argument('--overlap-patients', dest='overlap_patients', type=int, default=0, help='Array overlap for patient array')
     parser.add_argument('--overlap-bins', dest='overlap_bins', type=int, default=0, help='Array overlap for histogram bins')
+
+    parser.add_argument('--fast', action='store_true', help='Favor speed over fair benchmark results')
 
     arguments = parser.parse_args(arguments)
     arguments.chunk_vectors = arguments.chunk_vectors or arguments.vector_size

@@ -106,6 +106,8 @@ sink(correlations);
 """
 
 def restart_myria(arguments):
+    if arguments.fast: return
+
     print 'Restarting Myria'
     os.chdir(arguments.install_path + '/myriadeploy')
     try:
@@ -123,6 +125,10 @@ def create_input_files(arguments):
     workers = len(connection.workers())
     files = []
     offset = 0
+
+    if arguments.fast and MyriaRelation("public:adhoc:" + arguments.name).is_persisted:
+      print '  Relation already exists; skipping'
+      return
 
     for w in xrange(workers):
         filename = (arguments.tmp_path or '/tmp') + '/ingest-%dx%d-%s-%dof%d.csv' % (
@@ -147,6 +153,10 @@ def copy_files(files, arguments):
     print 'Copying files to workers'
     connection = MyriaConnection(rest_url=arguments.url)
 
+    if arguments.fast and MyriaRelation("public:adhoc:" + arguments.name).is_persisted:
+      print '  Relation already exists; skipping'
+      return
+
     try:
         for i, worker in enumerate(connection.workers()):
             node = connection._session.get(connection._url_start + '/workers/worker-{}'.format(worker)).text.split(':')[0]
@@ -158,6 +168,11 @@ def copy_files(files, arguments):
 
 def ingest(files, arguments):
     connection = MyriaConnection(rest_url=arguments.url)
+
+    if arguments.fast and MyriaRelation("public:adhoc:" + arguments.name).is_persisted:
+      print '  Relation already exists; skipping'
+      return
+
     work = [(w+1, 'file://' + files[w]) for w in xrange(len(connection.workers()))]
     schema = MyriaSchema(
         {"columnNames": ['id','time','value'],
@@ -175,6 +190,11 @@ def ingest(files, arguments):
 
 def partition(arguments):
     connection = MyriaConnection(rest_url=arguments.url)
+
+    if arguments.fast and MyriaRelation("public:adhoc:" + arguments.name).is_persisted:
+      print '  Relation already exists; skipping'
+      return
+
     query = MyriaQuery.submit("""x = scan({name});
                                  store(x, {name}, [id]);""".format(name=arguments.name),
                               connection=connection)
@@ -185,6 +205,9 @@ def partition(arguments):
     print 'Partitioning input by id (%s)' % query.status
 
 def warm_relation(arguments):
+    if arguments.fast:
+      return
+
     connection = MyriaConnection(rest_url=arguments.url)
     query = MyriaQuery.submit("""x = scan({name});
                                  store(x, temp);""".format(name=arguments.name),
@@ -225,6 +248,8 @@ def parse_arguments(arguments):
     parser.add_argument('--deployment-file', dest='deployment_path', type=str, default='~/deployment.cfg.ec2', help='Myria deployment file')
     parser.add_argument('--relation-name', dest='name', type=str, default='relation{}x{}', help='Name of input relation')
     parser.add_argument('--tmp-path', dest='tmp_path', type=str, default=tempfile.gettempdir(), help='Temporary directory to store input relation partitions')
+
+    parser.add_argument('--fast', action='store_true', help='Favor speed over fair benchmark results')
 
     arguments = parser.parse_args(arguments)
     arguments.name = arguments.name.format(arguments.patients, arguments.vector_size)

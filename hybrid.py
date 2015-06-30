@@ -206,6 +206,10 @@ def get_name(arguments, name):
 
 def restart_scidb(arguments):
     print 'Restarting SciDB'
+
+    if arguments.fast:
+      return
+
     try:
         subprocess.check_output([arguments.scidb_bin, 'stopall', arguments.scidb_name], stderr=subprocess.STDOUT)
         subprocess.check_output([arguments.scidb_bin, 'startall', arguments.scidb_name], stderr=subprocess.STDOUT)
@@ -217,6 +221,10 @@ def restart_scidb(arguments):
 
 def warm_array(arguments):
     print 'Prescanned array'
+
+    if arguments.fast:
+      return
+
     try:
         subprocess.check_output([arguments.scidb_iquery, '-anq', 'scan({})'.format(arguments.input_array)], stderr=subprocess.STDOUT)
         subprocess.check_output([arguments.scidb_iquery, '-anq', "load_library('bin')"], stderr=subprocess.STDOUT)
@@ -255,6 +263,8 @@ def parse_arguments(arguments):
 
     parser.add_argument('--output-path', dest='output_path', type=str, default='out', help='SciDB worker-relative directory to store input relation partitions')
     parser.add_argument('--intermediate-path', dest='intermediate_path', type=str, default='/home/scidb', help='Common NFS path across both SciDB and Myria for intermediate results')
+
+    parser.add_argument('--fast', action='store_true', help='Favor speed over fair benchmark results')
 
     arguments = parser.parse_args(arguments)
     arguments.chunk_vectors = arguments.chunk_vectors or arguments.vector_size

@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Myria Query</title>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="cola.min.js"></script>
+  <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
+  <script type="text/javascript" src="bullet.js"></script>
+  <script type="text/javascript" src="index.js"></script>
+  <script type="text/javascript" src="workflow.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="bullet.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
+</head>
+
+<body>
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Automatically-Generated Connectors</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="index.html">Home</a></li>
+          <li><a href="https://github.com/BrandonHaynes/hybrid_usecase">Repository</a></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Queries <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="myria.html">Myria</a></li>
+              <li><a href="scidb.html">SciDB</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="hybrid-csv.html">SciDB → Myria (CSV)</a></li>
+              <li><a href="hybrid-binary.html">SciDB → Myria (Binary)</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="introduction">
+    <h1>SciDB Query</h1>
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </p>
+  </div>
+
+  <div id="workflow">
+    <h2>Workflow</h2>
+    <div id="workflow-container"></div>
+  </div>
+
+  <div class="introduction">
+    <h2>SciDB Query</h2>
+    <pre id="query" class="prettyprint">
+        --------------------------------------------------------------------------
+        -- Temporary arrays for DWT storage
+        --------------------------------------------------------------------------
+        create temp array transform_1<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+        create temp array transform_2<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+        create temp array transform_3<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+        create temp array transform_4<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+        create temp array transform_5<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+        create temp array transform_6<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+        create temp array transform_7<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+        create temp array transform_8<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+
+        --------------------------------------------------------------------------
+        -- DWT (# iterations assumed)
+        --------------------------------------------------------------------------
+        -- DWT w/ Harr basis using UDA
+        store(regrid(scan(input), 1, 2, avg(value) as value, bin1(value) as bucket), transform_1);
+        store(regrid(scan(transform_1), 1, 2, avg(value) as value, bin2(value) as bucket), transform_2);
+        store(regrid(scan(transform_2), 1, 2, avg(value) as value, bin4(value) as bucket), transform_3);
+        store(regrid(scan(transform_3), 1, 2, avg(value) as value, bin8(value) as bucket), transform_4);
+        store(regrid(scan(transform_4), 1, 2, avg(value) as value, bin16(value) as bucket), transform_5);
+        store(regrid(scan(transform_5), 1, 2, avg(value) as value, bin32(value) as bucket), transform_6);
+        store(regrid(scan(transform_6), 1, 2, avg(value) as value, bin64(value) as bucket), transform_7);
+        store(regrid(scan(transform_7), 1, 2, avg(value) as value, bin128(value) as bucket), transform_8);
+
+        -- Binning and concatenation
+        store(attribute_rename(
+                 project(
+                   apply(concat(concat(concat(concat(concat(concat(concat(
+                     redimension(transform_1, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value),
+                     redimension(transform_2, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value)),
+                     redimension(transform_3, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value)),
+                     redimension(transform_4, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value)),
+                     redimension(transform_5, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value)),
+                     redimension(transform_6, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value)),
+                     redimension(transform_7, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value)),
+                     redimension(transform_8, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value)),
+                     signed_value, int64(value)),
+                   signed_value),
+               signed_value, value), symbols);
+
+        -- Histogram computation
+        store(uniq(sort(project(symbols, value))), unique_values);
+        store(project(index_lookup(symbols, unique_values, symbols.value, value_index), value, value_index), value_indices);
+        store(project(unpack(aggregate(redimension(value_indices, <value:int64 null>[id,time,value_index]), count(*) as frequency, max(value) as value, value_index), index), value, frequency), frequencies);
+
+        --------------------------------------------------------------------------
+        -- TD-IDF
+        --------------------------------------------------------------------------
+        store(redimension(apply(cross_join(redimension(value_indices, <value:int64 NULL DEFAULT null> [id,bucket,value_index]) as left,
+            attribute_rename(
+                redimension(
+                    project(
+                        index_lookup(
+                            frequencies,
+                            unique_values,
+                            frequencies.value,
+                            value_index),
+                        value,
+                        frequency,
+                        value_index),
+                    <value:int64 NULL, frequency:uint64 NULL> [index, value_index]),
+                value,
+                value_f) as right,
+              left.value_index,
+              right.value_index),
+              idf,
+              log(600.0 / frequency) * value),
+            <idf:double null>[id, bucket]),
+          tfv);
+
+        --------------------------------------------------------------------------
+        -- Conditioning
+        --------------------------------------------------------------------------
+        store(
+            attribute_rename(
+                project(
+                    apply(
+                        cross_join(
+                            tfv as _tfv,
+                            aggregate(
+                                tfv,
+                                avg(idf) as mean,
+                                stdev(idf) as std,
+                                id) as moments,
+                            _tfv.id,
+                            moments.id),
+                        normalized_value,
+                        (idf - mean) / std),
+                    normalized_value),
+                normalized_value,
+                value),
+            conditioned_tfv);
+
+        --------------------------------------------------------------------------
+        -- k-NN / Sink
+        --------------------------------------------------------------------------
+        consume(
+            project(
+                apply(
+                    aggregate(
+                        apply(
+                            cross_join(
+                                attribute_rename(
+                                    cross_join(
+                                        conditioned_tfv as ctfv,
+                                        aggregate(
+                                            apply(
+                                                conditioned_tfv,
+                                                vv,
+                                                pow(value, 2)),
+                                            sum(vv) as ss,
+                                            id) as sum_squares,
+                                        ctfv.id,
+                                        sum_squares.id),
+                                    value,
+                                    value) as ctfv_ss,
+                                attribute_rename(
+                                    redimension(
+                                        slice(
+                                            conditioned_tfv,
+                                            id,
+                                            1),
+                                        <value: double null>[bucket]),
+                                    value,
+                                    value_test) as test_vector,
+                                ctfv_ss.bucket,
+                                test_vector.bucket),
+                            product,
+                            value * value_test),
+                        sum(product) as sum,
+                        min(ss) as ss,
+                        id),
+                    rho,
+                    sum / ss),
+                rho));
+      </pre>
+  </div>
+
+  <div id="execution">
+    <h2>Performance</h2>
+  </div>
+</body>
+</html>

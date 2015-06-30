@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Hybrid Query Demo</title>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="cola.min.js"></script>
+
+  <script type="text/javascript" src="bullet.js"></script>
+  <script type="text/javascript" src="index.js"></script>
+  <script type="text/javascript" src="workflow.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="bullet.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
+</head>
+
+<body>
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Automatically-Generated Connectors</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="index.html">Home</a></li>
+          <li><a href="https://github.com/BrandonHaynes/hybrid_usecase">Repository</a></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Queries <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="myria.html">Myria</a></li>
+              <li><a href="scidb.html">SciDB</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="hybrid-csv.html">SciDB → Myria (CSV)</a></li>
+              <li><a href="hybrid-binary.html">SciDB → Myria (Binary)</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="introduction">
+    <h1>Efficient Hybrid Query Execution Using Automatically-Generated Connectors</h1>
+    <p>
+      In this work we demonstrate an algorithm for the automated generation of connecting operators between arbitrary pairs of compatible database systems without the need to materialize the underlying data on the file system. Our approach improves performance and enables users to leverage functionality in external systems.
+    </p>
+    <div class="row">
+      <div class="col-md-4">
+        <h3>SciDB → Myria</h3>
+        <p>Our demonstration computes the DWT on the SciDB system and then transfers intermediate results to the Myria DBMS, which is responsible for executing the TD-IDF and 𝑘-NN components.</p>
+      </div>
+      <div class="col-md-4">
+        <h3>Automatic Generation</h3>
+        <p>Our approach <em>automatically</em> generates connections between arbitrary pairs of compatible database systems without the need to materialize transferred data on the file system.
+        </p>
+     </div>
+      <div class="col-md-4">
+        <h3>Real-World Use Case</h3>
+        <p>We replicated a recent study by Saeed &amp; Mark, which was designed to identify temporally-similar patterns in vector-oriented physiologic measurements.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="workflow">
+    <h2>Workflow</h2>
+    <div id="workflow-container"></div>
+  </div>
+
+  <div id="execution">
+    <h2>Performance</h2>
+  </div>
+</body>
+</html>

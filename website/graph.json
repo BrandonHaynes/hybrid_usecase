@@ -1,0 +1,29 @@
+{
+    "nodes":[
+      {"name":"Iterative Partitioned Aggregate","width":200,"height":100, "sx":50, "sy":30, "lx":130, "ly":62, "color":"rgb(253, 191, 111)", "class":"dwt"},
+      {"name":"Concat","width":80,"height":100, "sx":230, "sy":30, "lx":250, "ly":62, "color":"rgb(253, 191, 111)", "class":"concat"},
+
+      {"name":"Term Frequency","width":120,"height":100, "sx":350, "sy":30, "lx":390, "ly":62, "color":"rgb(178, 223, 138)", "class":"tf"},
+      {"name":"Inverse Document Frequency","width":200,"height":100, "sx":450, "sy":30, "lx":530, "ly":62, "color":"rgb(178, 223, 138)", "class":"idf"},
+
+      {"name":"Conditioning","width":100,"height":100, "sx":680, "sy":30, "lx":710, "ly":62, "color":"rgb(251, 154, 153)", "class":"condition"},
+      {"name":"Correlations","width":100,"height":100, "sx":760, "sy":30, "lx":790, "ly":62, "color":"rgb(251, 154, 153)", "class":"correlations"},
+
+      {"name":"Sink","width":100,"height":100, "sx":860, "sy":30, "lx":890, "ly":62, "color":"rgb(255, 255, 153)", "class":"sink"}
+    ],
+    "links":[
+      {"source":0,"target":1, "sx1":200, "sy1":60, "sx2":223, "sy2":60},
+      {"source":1,"target":2, "sx1":240, "sy1":60, "sx2":344, "sy2":60},
+
+      {"source":2,"target":3, "sx1":400, "sy1":60, "sx2":444, "sy2":60},
+      {"source":3,"target":4, "sx1":500, "sy1":60, "sx2":673, "sy2":60},
+
+      {"source":4,"target":5, "sx1":700, "sy1":60, "sx2":753, "sy2":60},
+      {"source":5,"target":6, "sx1":800, "sy1":60, "sx2":854, "sy2":60}
+    ],
+	"groups":[
+    {"leaves":[0, 1], "name": "Discrete Wavelet Transform", "sx":20, "sy":0, "width":280, "height":120, "color":"rgb(255, 127, 0)", "lx": 160, "ly": 20, "class":"dwt-group"},
+    {"leaves":[2, 3], "name": "TD-IDF", "sx":320, "sy":0, "width":320, "height":120, "color":"rgb(51, 160, 44)", "lx": 480, "ly": 20, "class":"tdidf-group"},
+    {"leaves":[4, 5], "name": "𝑘-NN", "sx":660, "sy":0, "width":180, "height":120, "color":"rgb(227, 26, 28)", "lx": 750, "ly": 20, "class":"knn-group"}
+	]
+}

@@ -1,0 +1,65 @@
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  padding: 2em;
+}
+
+.bullet { font: 10px sans-serif; }
+.bullet .marker { stroke: transparent; stroke-width: 2px; }
+.bullet .tick line { stroke: #666; stroke-width: .5px; }
+.bullet .range.s0 { fill: #eee; }
+.bullet .range.s1 { fill: #ddd; }
+.bullet .range.s2 { fill: #ccc; }
+.bullet .measure.s0 { fill: rgb(166, 217, 106); }
+.bullet .measure.s1 { fill: steelblue; }
+.bullet .title { font-size: 14px; font-weight: bold; }
+/*.bullet .subtitle { fill: #999; }*/
+
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+    cursor: move;
+}
+
+.group {
+  stroke: #fff;
+  stroke-width: 1.5px;
+  cursor: move;
+  opacity: 0.7;
+}
+
+.link {
+  stroke: rgb(37, 37, 37);
+  stroke-width: 3px;
+  stroke-opacity: 1;
+}
+
+.label {
+    fill: #000;
+    font-family: Verdana;
+    font-size: 25px;
+    text-anchor: middle;
+    cursor: move;
+}
+
+.groupLabel {
+  font-size: 100% !important;
+  display: block;
+}
+
+#workflow-container {
+  overflow-x: auto;
+}
+
+div#workflow-container svg {
+  display: table;
+  margin: auto;
+}
+
+pre#query {
+  height: 500px;
+  overflow-y: auto;
+}
+
+#execution h2 {
+  margin-top: 0;
+}

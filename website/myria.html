@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Myria Query</title>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="cola.min.js"></script>
+  <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
+  <script type="text/javascript" src="bullet.js"></script>
+  <script type="text/javascript" src="index.js"></script>
+  <script type="text/javascript" src="workflow.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="bullet.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
+</head>
+
+<body>
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Automatically-Generated Connectors</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="index.html">Home</a></li>
+          <li><a href="https://github.com/BrandonHaynes/hybrid_usecase">Repository</a></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Queries <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="myria.html">Myria</a></li>
+              <li><a href="scidb.html">SciDB</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="hybrid-csv.html">SciDB → Myria (CSV)</a></li>
+              <li><a href="hybrid-binary.html">SciDB → Myria (Binary)</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="introduction">
+    <h1>Myria Query</h1>
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </p>
+  </div>
+
+  <div id="workflow">
+    <h2>Workflow</h2>
+    <div id="workflow-container"></div>
+  </div>
+
+  <div class="introduction">
+    <h2>Myria Query</h2>
+    <pre id="query" class="prettyprint">
+      const test_vector_id: {id};
+
+      vectors = scan({relation});
+
+      -------------------------
+      -- Constants + Functions
+      -------------------------
+      const alpha: 1.0;
+      const bins: {bins};
+
+      def log2(x): log(x) / log(2);
+      def mod2(x): x - int(x/2)*2;
+      def iif(expression, true_value, false_value):
+          case when expression then true_value
+               else false_value end;
+      def bucket(x, high, low): greater(least(int((bins-1) * (x - low) / iif(high != low, high - low, 1)),
+                                      bins - 1), 0);
+      def difference(current, previous, previous_time, time):
+          iif(previous_time &gt;= 0,
+              (current - previous) * iif(previous_time &lt; time, 1, -1),
+              current);
+      def idf(w_ij, w_ijN, N): log(N / w_ijN) * w_ij;
+
+      symbols = empty(id:int, index:int, value:int);
+
+      ------------------------------------------------------------------------------------
+      -- Harr Transform
+      ------------------------------------------------------------------------------------
+      uda HarrTransformGroupBy(alpha, time, x) {{
+        [0.0 as coefficient, 0.0 as _sum, 0 as _count, -1 as _time];
+        [difference(x, coefficient, _time, time), _sum + x, _count + 1, time];
+        [coefficient, _sum / int(_count * alpha)];
+      }};
+
+      iterations = [from vectors where id = test_vector_id emit 0 as i, int(ceil(log2(count(*)))) as total];
+
+      do
+          groups = [from vectors emit
+                           id,
+                           int(floor(time/2)) as time,
+                           HarrTransformGroupBy(alpha, time, value) as [coefficient, mean]];
+
+          coefficients = [from groups emit id, coefficient];
+          range = [from vectors emit max(value) - min(value) as high, min(value) - max(value) as low];
+
+          histogram = [from coefficients, range
+                       emit id,
+                            bucket(coefficient, high, low) as index,
+                            count(bucket(coefficient, high, low)) as value];
+          symbols = symbols + [from histogram, iterations emit id, index + i*bins as index, value];
+          vectors = [from groups emit id, time, mean as value];
+
+          iterations = [from iterations emit $0 + 1, $1];
+      while [from iterations emit $0 &lt; $1];
+
+      ------------------------------------------------------------------------------------
+      -- IDF
+      ------------------------------------------------------------------------------------
+      ids = distinct([from symbols emit id]);
+      N = [from ids emit count(*) as N];
+      frequencies = [from symbols emit value, index, count(*) as frequency];
+
+      tfv = [from symbols, frequencies, N
+             where symbols.value = frequencies.value
+             emit id, index, idf(value, frequency, N) as value];
+
+      ------------------------------------------------------------------------------------
+      -- Conditioning
+      ------------------------------------------------------------------------------------
+      moments = [from tfv emit id,
+                               avg(value) as mean,
+                               -- Sample estimator
+                               sqrt((stdev(value)*stdev(value)*count(value))/(count(value)-1)) as std];
+      conditioned_tfv = [from tfv, moments
+                         where tfv.id = moments.id
+                         emit id, index, value as v, mean, std, (value - mean) / std as value];
+      sum_squares = [from conditioned_tfv
+                     emit id, sum(pow(value, 2)) as sum_squares];
+
+      ------------------------------------------------------------------------------------
+      -- k-NN
+      ------------------------------------------------------------------------------------
+
+      test_vector = [from conditioned_tfv where id = test_vector_id emit *];
+
+      products = [from test_vector as x,
+                       conditioned_tfv as y
+                      where x.index = y.index
+                      emit y.id as id, sum(x.value * y.value) as product];
+
+      correlations = [from products, sum_squares
+                      where products.id = sum_squares.id
+                      emit products.id as id, product / sum_squares as rho];
+
+      sink(correlations);
+    </pre>
+  </div>
+
+  <div id="execution">
+    <h2>Performance</h2>
+  </div>
+</body>
+</html>

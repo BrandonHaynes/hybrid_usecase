@@ -1,0 +1,6 @@
+[
+  {"title":"SciDB","hideScale":true,"ranges":[17.5,17.5],"measures":[0,0],"markers":[20], "url": "execute.html?system=scidb", "expression": "execution time: ([\\d\\.]+)"},
+  {"title":"Myria","hideScale":true,"ranges":[14,14],"measures":[0,0],"markers":[20], "url": "execute.html?system=myria", "expression": "execution time: ([\\d\\.]+)"},
+  {"title":"Hybrid SciDB → Myria (CSV)","hideScale":true,"ranges":[8,8],"measures":[0,0],"markers":[20], "url": "execute.html?system=hybrid-csv", "expression": "execution time: ([\\d\\.]+)"},
+  {"title":"Hybrid SciDB → Myria (Binary)","ranges":[7,7],"measures":[0,0],"markers":[20]}
+]

@@ -1,0 +1,292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Myria Query</title>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="cola.min.js"></script>
+  <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
+  <script type="text/javascript" src="bullet.js"></script>
+  <script type="text/javascript" src="index.js"></script>
+  <script type="text/javascript" src="workflow.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="bullet.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
+</head>
+
+<body>
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Automatically-Generated Connectors</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="index.html">Home</a></li>
+          <li><a href="https://github.com/BrandonHaynes/hybrid_usecase">Repository</a></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Queries <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="myria.html">Myria</a></li>
+              <li><a href="scidb.html">SciDB</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="hybrid-csv.html">SciDB → Myria (CSV)</a></li>
+              <li><a href="hybrid-binary.html">SciDB → Myria (Binary)</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="introduction">
+    <h1>Hybrid Query: SciDB → Myria (CSV)</h1>
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    </p>
+  </div>
+
+  <div class="introduction">
+    <h2>SciDB Query</h2>
+    <pre id="query" class="prettyprint">
+      --========================================================================
+      -- SciDB
+      --========================================================================
+
+      --------------------------------------------------------------------------
+      -- Temporary arrays for DWT storage and export
+      --------------------------------------------------------------------------
+      create temp array transform_1<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
+      create temp array transform_2<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
+      create temp array transform_3<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
+      create temp array transform_4<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
+      create temp array transform_5<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
+      create temp array transform_6<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
+      create temp array transform_7<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
+      create temp array transform_8<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
+
+      create temp array out_transform_1<value:int64 null>[id=0:599,256,0, bucket=0:9,4294967296,0];
+      create temp array out_transform_2<value:int64 null>[id=0:599,256,0, bucket=0:9,4294967296,0];
+      create temp array out_transform_3<value:int64 null>[id=0:599,256,0, bucket=0:9,4294967296,0];
+      create temp array out_transform_4<value:int64 null>[id=0:599,256,0, bucket=0:9,4294967296,0];
+      create temp array out_transform_5<value:int64 null>[id=0:599,256,0, bucket=0:9,4294967296,0];
+      create temp array out_transform_6<value:int64 null>[id=0:599,256,0, bucket=0:9,4294967296,0];
+      create temp array out_transform_7<value:int64 null>[id=0:599,256,0, bucket=0:9,4294967296,0];
+      create temp array out_transform_8<value:int64 null>[id=0:599,256,0, bucket=0:9,4294967296,0];
+
+      --------------------------------------------------------------------------
+      -- DWT computation and export to Myria
+      --------------------------------------------------------------------------
+      save(
+        redimension(
+          store(
+            regrid(
+              scan(input),
+              1, 2,
+              avg(value), bin1(value)),
+              transform_1),
+          out_transform_1,
+          signed_count(bucket) as value),
+        'socket://transform_1', -1, 'csv+');
+
+      save(
+        redimension(
+          store(
+            regrid(
+              scan(transform_1),
+              1, 2,
+              avg(value), bin2(value)),
+              transform_2),
+          out_transform_2,
+          signed_count(bucket) as value),
+        'socket://transform_2', -1, 'csv+');
+
+      save(
+        redimension(
+          store(
+            regrid(
+              scan(transform_2),
+              1, 2,
+              avg(value), bin4(value)),
+              transform_3),
+          out_transform_3,
+          signed_count(bucket) as value),
+        'socket://transform_3', -1, 'csv+');
+
+      save(
+        redimension(
+          store(
+            regrid(
+              scan(transform_3),
+              1, 2,
+              avg(value), bin8(value)),
+              transform_4),
+          out_transform_4,
+          signed_count(bucket) as value),
+        'socket://transform_4', -1, 'csv+');
+
+      save(
+        redimension(
+          store(
+            regrid(
+              scan(transform_4),
+              1, 2,
+              avg(value), bin16(value)),
+              transform_5),
+          out_transform_5,
+          signed_count(bucket) as value),
+        'socket://transform_5', -1, 'csv+');
+
+      save(
+        redimension(
+          store(
+            regrid(
+              scan(transform_5),
+              1, 2,
+              avg(value), bin32(value)),
+              transform_6),
+          out_transform_6,
+          signed_count(bucket) as value),
+        'socket://transform_6', -1, 'csv+');
+
+      save(
+        redimension(
+          store(
+            regrid(
+              scan(transform_6),
+              1, 2,
+              avg(value), bin64(value)),
+              transform_7),
+          out_transform_7,
+          signed_count(bucket) as value),
+        'socket://transform_7', -1, 'csv+');
+
+      save(
+        redimension(
+          store(
+            regrid(
+              scan(transform_7),
+              1, 2,
+              avg(value), bin128(value)),
+              transform_8),
+          out_transform_8,
+          signed_count(bucket) as value),
+        'socket://transform_8', -1, 'csv+');
+
+      --========================================================================
+      -- Myria
+      --========================================================================
+
+      const test_vector_id: 1;
+      const bins: 10;
+      def idf(w_ij, w_ijN, N): log(N / w_ijN) * w_ij;
+
+      ------------------------------------------------------------------------------------
+      -- Import from SciDB
+      ------------------------------------------------------------------------------------
+      symbols0x1 = load("socket://worker-0/transform_1", csv(schema(id:int, index:int, value:int)));
+      symbols1x1 = load("socket://worker-1/transform_1", csv(schema(id:int, index:int, value:int)));
+      symbols2x1 = load("socket://worker-2/transform_1", csv(schema(id:int, index:int, value:int)));
+      symbols3x1 = load("socket://worker-3/transform_1", csv(schema(id:int, index:int, value:int)));
+      symbols0x2 = load("socket://worker-0/transform_2", csv(schema(id:int, index:int, value:int)));
+      symbols1x2 = load("socket://worker-1/transform_2", csv(schema(id:int, index:int, value:int)));
+      symbols2x2 = load("socket://worker-2/transform_2", csv(schema(id:int, index:int, value:int)));
+      symbols3x2 = load("socket://worker-3/transform_2", csv(schema(id:int, index:int, value:int)));
+      symbols0x3 = load("socket://worker-0/transform_3", csv(schema(id:int, index:int, value:int)));
+      symbols1x3 = load("socket://worker-1/transform_3", csv(schema(id:int, index:int, value:int)));
+      symbols2x3 = load("socket://worker-2/transform_3", csv(schema(id:int, index:int, value:int)));
+      symbols3x3 = load("socket://worker-3/transform_3", csv(schema(id:int, index:int, value:int)));
+      symbols0x4 = load("socket://worker-0/transform_4", csv(schema(id:int, index:int, value:int)));
+      symbols1x4 = load("socket://worker-1/transform_4", csv(schema(id:int, index:int, value:int)));
+      symbols2x4 = load("socket://worker-2/transform_4", csv(schema(id:int, index:int, value:int)));
+      symbols3x4 = load("socket://worker-3/transform_4", csv(schema(id:int, index:int, value:int)));
+      symbols0x5 = load("socket://worker-0/transform_5", csv(schema(id:int, index:int, value:int)));
+      symbols1x5 = load("socket://worker-1/transform_5", csv(schema(id:int, index:int, value:int)));
+      symbols2x5 = load("socket://worker-2/transform_5", csv(schema(id:int, index:int, value:int)));
+      symbols3x5 = load("socket://worker-3/transform_5", csv(schema(id:int, index:int, value:int)));
+      symbols0x6 = load("socket://worker-0/transform_6", csv(schema(id:int, index:int, value:int)));
+      symbols1x6 = load("socket://worker-1/transform_6", csv(schema(id:int, index:int, value:int)));
+      symbols2x6 = load("socket://worker-2/transform_6", csv(schema(id:int, index:int, value:int)));
+      symbols3x6 = load("socket://worker-3/transform_6", csv(schema(id:int, index:int, value:int)));
+      symbols0x7 = load("socket://worker-0/transform_7", csv(schema(id:int, index:int, value:int)));
+      symbols1x7 = load("socket://worker-1/transform_7", csv(schema(id:int, index:int, value:int)));
+      symbols2x7 = load("socket://worker-2/transform_7", csv(schema(id:int, index:int, value:int)));
+      symbols3x7 = load("socket://worker-3/transform_7", csv(schema(id:int, index:int, value:int)));
+      symbols0x8 = load("socket://worker-0/transform_8", csv(schema(id:int, index:int, value:int)));
+      symbols1x8 = load("socket://worker-1/transform_8", csv(schema(id:int, index:int, value:int)));
+      symbols2x8 = load("socket://worker-2/transform_8", csv(schema(id:int, index:int, value:int)));
+      symbols3x8 = load("socket://worker-3/transform_8", csv(schema(id:int, index:int, value:int)));
+
+      symbols = symbols0x1 + symbols0x2 + symbols0x3 + symbols0x4 +
+                symbols0x5 + symbols0x6 + symbols0x7 + symbols0x8 +
+                symbols1x1 + symbols1x2 + symbols1x3 + symbols1x4 +
+                symbols1x5 + symbols1x6 + symbols1x7 + symbols1x8 +
+                symbols2x1 + symbols2x2 + symbols2x3 + symbols2x4 +
+                symbols2x5 + symbols2x6 + symbols2x7 + symbols2x8 +
+                symbols3x1 + symbols3x2 + symbols3x3 + symbols3x4 +
+                symbols3x5 + symbols3x6 + symbols3x7 + symbols3x8;
+      store(symbols, symbols);
+      symbols = scan(symbols);
+
+      ------------------------------------------------------------------------------------
+      -- IDF
+      ------------------------------------------------------------------------------------
+      ids = distinct([from symbols emit id]);
+      N = [from ids emit count(*) as N];
+      frequencies = [from symbols emit value, index, count(*) as frequency];
+
+      tfv = [from symbols, frequencies, N
+             where symbols.value = frequencies.value
+             emit id, index, idf(value, frequency, N) as value];
+
+      ------------------------------------------------------------------------------------
+      -- Conditioning
+      ------------------------------------------------------------------------------------
+      moments = [from tfv emit id,
+                               avg(value) as mean,
+                               -- Sample estimator
+                               sqrt((stdev(value)*stdev(value)*count(value))/(count(value)-1)) as std];
+      conditioned_tfv = [from tfv, moments
+                         where tfv.id = moments.id
+                         emit id, index, value as v, mean, std, (value - mean) / std as value];
+      sum_squares = [from conditioned_tfv
+                     emit id, sum(pow(value, 2)) as sum_squares];
+
+      ------------------------------------------------------------------------------------
+      -- k-NN
+      ------------------------------------------------------------------------------------
+
+      test_vector = [from conditioned_tfv where id = test_vector_id emit *];
+
+      products = [from test_vector as x,
+                       conditioned_tfv as y
+                      where x.index = y.index
+                      emit y.id as id, sum(x.value * y.value) as product];
+
+      correlations = [from products, sum_squares
+                      where products.id = sum_squares.id
+                      emit products.id as id, product / sum_squares as rho];
+
+      sink(correlations);
+      </pre>
+  </div>
+
+  <div id="workflow">
+    <h2>Workflow</h2>
+    <div id="workflow-container"></div>
+  </div>
+
+  <div id="execution">
+    <h2>Performance</h2>
+  </div>
+
+  <script type="text/javascript">
+    d3.timer(function() { highlight_hybrid(); return true; }, 500);
+  </script>
+</body>
+</html>

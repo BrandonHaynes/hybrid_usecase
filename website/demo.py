@@ -31,38 +31,42 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             self.end_headers()
 
     def execute(self, system):
+        prefix = ['starcluster', 'sshmaster', self.server.arguments.cluster_name] if arguments.starcluster else []
+
         if system == 'myria':
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(subprocess.check_output(['starcluster', 'sshmaster', self.server.arguments.cluster_name,
-                                     "python myria_only.py {patients} {vector_size} --url {url}".format(
+            command = "python /root/myria_only.py {patients} {vector_size} --url {url}".format(
                                         patients=self.server.arguments.patients,
                                         vector_size=self.server.arguments.vector_size,
-                                        url=self.server.arguments.myria_url)],
-                                    stderr=subprocess.STDOUT))
+                                        url=self.server.arguments.myria_url)
         elif system == 'scidb':
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(subprocess.check_output(['starcluster', 'sshmaster', self.server.arguments.cluster_name,
-                                     "python scidb_only.py {patients} {vector_size} --url {url}".format(
+            command = "python /root/scidb_only.py {patients} {vector_size} --url {url}".format(
                                         patients=self.server.arguments.patients,
                                         vector_size=self.server.arguments.vector_size,
-                                        url=self.server.arguments.scidb_url)],
-                                    stderr=subprocess.STDOUT))
+                                        url=self.server.arguments.scidb_url)
         elif system == 'hybrid-csv':
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(subprocess.check_output(['starcluster', 'sshmaster', self.server.arguments.cluster_name,
-                                     "python hybrid.py {patients} {vector_size} {scidb_workers} --myria-url {url}".format(
+            command = "python /root/hybrid.py {patients} {vector_size} {scidb_workers} --myria-url {url}".format(
                                         patients=self.server.arguments.patients,
                                         vector_size=self.server.arguments.vector_size,
                                         scidb_workers=self.server.arguments.scidb_workers,
-                                        url=self.server.arguments.myria_url)],
-                                    stderr=subprocess.STDOUT))
+                                        url=self.server.arguments.myria_url)
         else:
             self.send_response(404)
             self.end_headers()
             self.wfile.write('System not found.')
+            command = None
+
+        if command:
+            self.wfile.write(subprocess.check_output(prefix + [command] \
+                                if arguments.starcluster \
+                                else command.split(' '),
+                             stderr=subprocess.STDOUT))
+
 
     def output(self, filename):
         self.send_response(200)
@@ -89,13 +93,14 @@ def parse_arguments(arguments):
 
     parser.add_argument('--myria-url', type=str, dest='myria_url', default='http://localhost:8080', help='SciDB Shim URL')
     parser.add_argument('--scidb-url', type=str, dest='scidb_url', default='http://localhost:8080', help='SciDB Shim URL')
+    parser.add_argument('--starcluster', action='store_false', help='Connect to cluster [cluster_name] using Starcluster')
     parser.add_argument('--port', type=int, default=8752, help='Webserver port number')
 
     return parser.parse_args(arguments)
 
 if __name__ == "__main__":
     arguments = parse_arguments(sys.argv[1:])
-
+    print arguments
     logging.getLogger().setLevel(logging.DEBUG)
 
     DemoTCPServer(('0.0.0.0', arguments.port),

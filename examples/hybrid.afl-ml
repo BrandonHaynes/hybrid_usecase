@@ -6,13 +6,13 @@
 -- Temporary arrays for DWT storage and export
 --------------------------------------------------------------------------
 create temp array transform_1<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
-create temp array transform_2<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
-create temp array transform_3<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
-create temp array transform_4<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
-create temp array transform_5<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
-create temp array transform_6<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
-create temp array transform_7<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
-create temp array transform_8<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
+create temp array transform_2<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:63,256,0];
+create temp array transform_3<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:31,256,0];
+create temp array transform_4<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:15,256,0];
+create temp array transform_5<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:7,256,0];
+create temp array transform_6<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:3,256,0];
+create temp array transform_7<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:1,256,0];
+create temp array transform_8<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:0,256,0];
 
 create temp array out_transform_1<value:int64 null>[id=0:599,256,0, bucket=0:9,4294967296,0];
 create temp array out_transform_2<value:int64 null>[id=0:599,256,0, bucket=0:9,4294967296,0];

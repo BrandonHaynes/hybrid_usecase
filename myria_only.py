@@ -121,7 +121,7 @@ def restart_myria(arguments):
 
 def create_input_files(arguments):
     print 'Creating input files on coordinator'
-    connection = MyriaConnection(rest_url=arguments.url)
+    connection = MyriaConnection(rest_url=arguments.url, execution_url=arguments.execution_url)
     workers = len(connection.workers())
     files = []
     offset = 0
@@ -151,7 +151,7 @@ def create_input_files(arguments):
 
 def copy_files(files, arguments):
     print 'Copying files to workers'
-    connection = MyriaConnection(rest_url=arguments.url)
+    connection = MyriaConnection(rest_url=arguments.url, execution_url=arguments.execution_url)
 
     if arguments.fast and MyriaRelation("public:adhoc:" + arguments.name).is_persisted:
       print '  Relation already exists; skipping'
@@ -167,7 +167,7 @@ def copy_files(files, arguments):
         raise e
 
 def ingest(files, arguments):
-    connection = MyriaConnection(rest_url=arguments.url)
+    connection = MyriaConnection(rest_url=arguments.url, execution_url=arguments.execution_url)
 
     if arguments.fast and MyriaRelation("public:adhoc:" + arguments.name).is_persisted:
       print '  Relation already exists; skipping'
@@ -189,7 +189,7 @@ def ingest(files, arguments):
     print 'Ingesting into public:adhoc:%s (%s)' % (arguments.name, query.status)
 
 def partition(arguments):
-    connection = MyriaConnection(rest_url=arguments.url)
+    connection = MyriaConnection(rest_url=arguments.url, execution_url=arguments.execution_url)
 
     if arguments.fast and MyriaRelation("public:adhoc:" + arguments.name).is_persisted:
       print '  Relation already exists; skipping'
@@ -208,7 +208,7 @@ def warm_relation(arguments):
     if arguments.fast:
       return
 
-    connection = MyriaConnection(rest_url=arguments.url)
+    connection = MyriaConnection(rest_url=arguments.url, execution_url=arguments.execution_url)
     query = MyriaQuery.submit("""x = scan({name});
                                  store(x, temp);""".format(name=arguments.name),
                               connection=connection)
@@ -219,7 +219,7 @@ def warm_relation(arguments):
     print 'Warmed input relation (%s)' % arguments.name
 
 def execute(query, arguments):
-    connection = MyriaConnection(rest_url=arguments.url)
+    connection = MyriaConnection(rest_url=arguments.url, execution_url=arguments.execution_url)
     query = MyriaQuery.submit(
         query.format(id=arguments.id, relation=arguments.name, bins=arguments.bins),
         connection=connection)
@@ -238,8 +238,10 @@ def parse_arguments(arguments):
     parser = argparse.ArgumentParser(description='Execute Myria-only test')
     parser.add_argument('patients', type=int, default=600, help='Number of patients in test')
     parser.add_argument('vector_size', type=int, default=256, help='Size of input vector')
-    parser.add_argument('--url', type=str, default='http://localhost:8753', help='Myria REST URL')
     parser.add_argument('--bins', type=int, default=10, help='Number of histogram bins')
+
+    parser.add_argument('--url', type=str, default='http://localhost:8753', help='Myria REST URL')
+    parser.add_argument('--execution-url', dest='execution_url', type=str, help='Myria Execution URL')
 
     parser.add_argument('--test-id', dest='id', type=int, default=1, help='Index of the test vector')
     parser.add_argument('--input-mode', dest='input_mode', type=str, default='random', choices=['deterministic', 'random'], help='Mode of automatically generated input')

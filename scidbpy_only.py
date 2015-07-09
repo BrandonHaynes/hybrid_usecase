@@ -19,11 +19,20 @@ def symbols(arguments):
 
   for index in xrange(arguments.iterations):
       transform = arguments.sdb.afl.regrid(vectors, '1, 2', 'avg(value) as value, '
-                                                    'bin{range}(value) as bucket'.format(range=2**i)).eval()
+                                                    'bin{range}(value) as bucket'.format(range=2**index)).eval()
+      #transform = (arguments.sdb.afl.regrid(vectors, '1, 2', 'avg(value) as value, '
+      #                                              'avg(value) as bucket'.format(range=2**index))
+      #                              .apply('signed_bucket', 'int64(bucket)')
+      #                              .project('value', 'signed_bucket')
+      #                              .attribute_rename('signed_bucket', 'bucket')
+      #                              .eval())
 
-      histogram = transform.redimension('<value:int64 null>[bucket=0:{},1000000,0, id=0:{},30,0]'.format(
-                                            arguments.bins-1, arguments.patients-1),
-                                        'signed_count(bucket) as value')
+      histogram = (transform.redimension('<value:uint64 null>[bucket=0:{},1000000,0, id=0:{},30,0]'.format(
+                                             arguments.bins-1, arguments.patients-1),
+                                         'count(bucket) as value')
+                            .apply('signed_value', 'int64(value)')
+                            .project('signed_value')
+                            .attribute_rename('signed_value', 'value'))
       symbols = symbols.concat(histogram) if symbols else histogram
       vectors = transform
 
@@ -102,6 +111,9 @@ def create_input(arguments):
 
 
 def restart_scidb(arguments):
+    if not arguments.restart:
+      return
+
     print 'Restarting SciDB'
     try:
         subprocess.check_output([arguments.scidb_bin, 'stopall', arguments.scidb_name], stderr=subprocess.STDOUT)
@@ -144,10 +156,17 @@ def parse_arguments(arguments):
     parser.add_argument('--overlap-patients', dest='overlap_patients', type=int, default=0, help='Array overlap for patient array')
     parser.add_argument('--overlap-bins', dest='overlap_bins', type=int, default=0, help='Array overlap for histogram bins')
 
+    parser.add_argument('--username', type=str, default=None, help='Username used to authenticate with SciDB Shim')
+    parser.add_argument('--password', type=str, default=None, help='Password used to authenticate with SciDB Shim')
+
+    parser.add_argument('--restart', dest='restart', action='store_true', help='Restart SciDB before testing')
+    parser.add_argument('--no-restart', dest='restart', action='store_false', help='Do not restart SciDB before testing')
+    parser.set_defaults(restart=True)
+
     arguments = parser.parse_args(arguments)
     arguments.chunk_vectors = arguments.chunk_vectors or arguments.vector_size
     arguments.iterations = int(math.log(arguments.vector_size, 2))
-    arguments.sdb = scidbpy.connect(arguments.url)
+    arguments.sdb = scidbpy.connect(arguments.url, username=arguments.username, password=arguments.password)
 
     print 'Arguments: %s' % vars(arguments)
     return arguments

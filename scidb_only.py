@@ -305,7 +305,7 @@ def build_input(arguments):
     print 'Creating input vectors (mode=%s)' % arguments.input_mode
     if arguments.input_mode.lower() == 'deterministic':
         arguments.input_array = (
-            scidbpy.connect(arguments.url)
+            scidbpy.connect(arguments.url, username=arguments.username, password=arguments.password)
                    .afl.build('<value: double>[id=0:{},{},{}, time=0:{},{},{}]'.format(
                                   arguments.patients-1, arguments.chunk_patients, arguments.overlap_patients,
                                   arguments.vector_size-1, arguments.chunk_vectors, arguments.overlap_vectors),
@@ -314,7 +314,7 @@ def build_input(arguments):
                    .name)
     else:
         arguments.input_array = (
-            scidbpy.connect(arguments.url)
+            scidbpy.connect(arguments.url, username=arguments.username, password=arguments.password)
                    .random((arguments.patients, arguments.vector_size),
                            chunk_size=(arguments.chunk_patients, arguments.chunk_vectors),
                            dim_names=['id', 'time'])
@@ -326,6 +326,8 @@ def build_input(arguments):
 def restart_scidb(arguments):
     print 'Restarting SciDB'
 
+    if not arguments.restart:
+        return
     #if arguments.fast:
     #  return
 
@@ -376,7 +378,13 @@ def parse_arguments(arguments):
     parser.add_argument('--overlap-patients', dest='overlap_patients', type=int, default=0, help='Array overlap for patient array')
     parser.add_argument('--overlap-bins', dest='overlap_bins', type=int, default=0, help='Array overlap for histogram bins')
 
+    parser.add_argument('--username', type=str, default=None, help='Username used to authenticate with SciDB Shim')
+    parser.add_argument('--password', type=str, default=None, help='Password used to authenticate with SciDB Shim')
+
     parser.add_argument('--fast', action='store_true', help='Favor speed over fair benchmark results')
+    parser.add_argument('--restart', dest='restart', action='store_true', help='Restart SciDB before testing')
+    parser.add_argument('--no-restart', dest='restart', action='store_false', help='Do not restart SciDB before testing')
+    parser.set_defaults(restart=True)
 
     arguments = parser.parse_args(arguments)
     arguments.chunk_vectors = arguments.chunk_vectors or arguments.vector_size

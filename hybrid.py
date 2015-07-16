@@ -117,7 +117,7 @@ def myria_filename(arguments, worker, index):
 
 def execute_scidb(query, arguments):
     try:
-        subprocess.check_output([arguments.scidb_iquery, '-anq', query], stderr=subprocess.STDOUT)
+        subprocess.check_output([arguments.scidb_iquery, '-p', str(arguments.scidb_port), '-anq', query], stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         print e.cmd
         print e.output
@@ -226,8 +226,8 @@ def warm_array(arguments):
       return
 
     try:
-        subprocess.check_output([arguments.scidb_iquery, '-anq', 'scan({})'.format(arguments.input_array)], stderr=subprocess.STDOUT)
-        subprocess.check_output([arguments.scidb_iquery, '-anq', "load_library('bin')"], stderr=subprocess.STDOUT)
+        subprocess.check_output([arguments.scidb_iquery, '-p', str(arguments.scidb_port), '-anq', 'scan({})'.format(arguments.input_array)], stderr=subprocess.STDOUT)
+        subprocess.check_output([arguments.scidb_iquery, '-p', str(arguments.scidb_port), '-anq', "load_library('bin')"], stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         print e.cmd
         print e.output
@@ -243,7 +243,8 @@ def parse_arguments(arguments):
 
     parser.add_argument('--bins', type=int, default=10, help='Number of histogram bins')
     parser.add_argument('--scidb-url', type=str, dest='scidb_url', default='http://localhost:8080', help='SciDB Shim URL')
-    parser.add_argument('--myria-url', type=str, dest='myria_url', default='http://localhost:8080', help='SciDB Shim URL')
+    parser.add_argument('--myria-url', type=str, dest='myria_url', default='http://localhost:8753', help='Myria REST URL')
+    parser.add_argument('--myria-web-url', type=str, dest='myria_web_url', default='http://localhost:80', help='Myria Web URL')
 
     parser.add_argument('--test-id', dest='test_id', type=int, default=1, help='Index of test patient for k-NN computation')
     parser.add_argument('--input-mode', dest='input_mode', type=str, default='random', choices=['deterministic', 'random'], help='Mode of automatically generated input')
@@ -251,6 +252,7 @@ def parse_arguments(arguments):
     parser.add_argument('--scidb-bin', dest='scidb_bin', type=str, default='/opt/scidb/14.12/bin/scidb.py', help='Path of scidb.py')
     parser.add_argument('--scidb-iquery', dest='scidb_iquery', type=str, default='/opt/scidb/14.12/bin/iquery', help='Path of iquery')
     parser.add_argument('--scidb-name', dest='scidb_name', type=str, default='mydb', help='Name of SciDB database')
+    parser.add_argument('--scidb-port', dest='scidb_port', type=int, default='1239', help='Coordinator port for SciDB')
 
     parser.add_argument('--chunk-patients', dest='chunk_patients', type=int, default=1, help='Chunk size for patient array')
     parser.add_argument('--chunk-vectors', dest='chunk_vectors', type=int, default=None, help='Chunk size for input vectors')
@@ -272,7 +274,7 @@ def parse_arguments(arguments):
     arguments.transform_format = 'transform_%d'
     arguments.suffix = str(int(time.time()))
     arguments.iterations = int(math.log(arguments.vector_size, 2))
-    arguments.myria_connection = MyriaConnection(rest_url=arguments.myria_url)
+    arguments.myria_connection = MyriaConnection(rest_url=arguments.myria_url, execution_url=arguments.myria_web_url)
 
     print 'Arguments: %s' % vars(arguments)
     return arguments

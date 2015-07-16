@@ -11,7 +11,7 @@ def time_execution(arguments, n=1):
 
 def execute(arguments):
     try:
-        subprocess.check_output([arguments.scidb_iquery, '-anq', query(arguments)], stderr=subprocess.STDOUT)
+        subprocess.check_output([arguments.scidb_iquery, '-p', str(arguments.scidb_port), '-anq', query(arguments)], stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         print e.cmd
         print e.output
@@ -347,8 +347,8 @@ def warm_array(arguments):
       return
 
     try:
-        subprocess.check_output([arguments.scidb_iquery, '-anq', 'scan({})'.format(arguments.input_array)], stderr=subprocess.STDOUT)
-        subprocess.check_output([arguments.scidb_iquery, '-anq', "load_library('bin')"], stderr=subprocess.STDOUT)
+        subprocess.check_output([arguments.scidb_iquery, '-p', str(arguments.scidb_port), '-anq', 'scan({})'.format(arguments.input_array)], stderr=subprocess.STDOUT)
+        subprocess.check_output([arguments.scidb_iquery, '-p', str(arguments.scidb_port), '-anq', "load_library('bin')"], stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
         print e.cmd
         print e.output
@@ -369,6 +369,7 @@ def parse_arguments(arguments):
     parser.add_argument('--scidb-bin', dest='scidb_bin', type=str, default='/opt/scidb/14.12/bin/scidb.py', help='Path of scidb.py')
     parser.add_argument('--scidb-iquery', dest='scidb_iquery', type=str, default='/opt/scidb/14.12/bin/iquery', help='Path of iquery')
     parser.add_argument('--scidb-name', dest='scidb_name', type=str, default='mydb', help='Name of SciDB database')
+    parser.add_argument('--scidb-port', dest='scidb_port', type=int, default='1239', help='Coordinator port for SciDB')
 
     parser.add_argument('--chunk-patients', dest='chunk_patients', type=int, default=1, help='Chunk size for patient array')
     parser.add_argument('--chunk-vectors', dest='chunk_vectors', type=int, default=None, help='Chunk size for input vectors')

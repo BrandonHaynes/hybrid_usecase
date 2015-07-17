@@ -145,7 +145,7 @@ MYRIA_BASE=${MYRIA_BASE=/state/partition1/myria}
 MYRIA_DATA=$MYRIA_BASE/data
 POSTGRES_PORT=${POSTGRES_PORT=5433}
 
-#set +e
+set +e
 
 if [ ! -d $MYRIA_DATA ]; then
     mkdir -p $MYRIA_DATA
@@ -156,6 +156,7 @@ if [ ! -d $MYRIA_DATA ]; then
          >> $MYRIA_DATA/pg_hba.conf
 fi
 
+echo "Launch Postgres"
 echo "pg_ctl -D $MYRIA_DATA -o \"-h '*' -p $POSTGRES_PORT\" start"
 pg_ctl -p $POSTGRES_PORT -D $MYRIA_DATA status || \
     (pg_ctl -D $MYRIA_DATA -o "-h '*' -p $POSTGRES_PORT" start & \
@@ -166,6 +167,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+echo "Add roles"
 psql -p $POSTGRES_PORT -d postgres -tAc \
   "SELECT 1 FROM pg_roles WHERE rolname='uwdb'" | grep -q 1
 if [ $? -ne 0 ]; then
@@ -173,12 +175,14 @@ if [ $? -ne 0 ]; then
       "CREATE USER uwdb WITH PASSWORD 'FIXME'"
 fi
 
+echo "Create database"
 psql -p $POSTGRES_PORT -d postgres -tAc \
   "SELECT 1 FROM pg_database WHERE datname = '$MYRIA_NAME'" | grep -q 1
 if [ $? -ne 0 ]; then
     psql -p $POSTGRES_PORT -d postgres -c "CREATE DATABASE $MYRIA_NAME"
 fi
 
+echo "Grant Myria access to database"
 psql -p $POSTGRES_PORT -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE $MYRIA_NAME TO uwdb"
 }
 

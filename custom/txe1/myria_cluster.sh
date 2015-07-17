@@ -61,7 +61,7 @@ MYRIA_BRANCH=${MYRIA_BRANCH=create-deployment}
 MYRIA_HEAP_SIZE=${MYRIA_HEAP_SIZE=2g}
 
 POSTGRES_PORT=${POSTGRES_PORT=5433}
-GRADLE_CACHE_ARCHIVE=${GRADLE_CACHE_ARCHIVE=/home/gridsan/bhaynes/myria-gradle-cache.tar.gz}
+GRADLE_CACHE_ARCHIVE=${GRADLE_CACHE_ARCHIVE=https://drive.google.com/uc?export=download&confirm=HtgA&id=0B8yKPRGRXCo9Z19MMlFhU1hjVms}
 GOOGLE_APPENGINE_URL=${GOOGLE_APPENGINE_URL=url_not_specified}
 GATEWAY_NODE=${GATEWAY_NODE=login-1}
 MYRIA_STACK_URL=${MYRIA_STACK_URL=https://github.com/uwescience/myria-stack}
@@ -149,8 +149,8 @@ POSTGRES_PORT=${POSTGRES_PORT=5433}
 
 if [ ! -d $MYRIA_DATA ]; then
     mkdir -p $MYRIA_DATA
-    initdb -D $MYRIA_DATA 
-    export MYRIA_NAME 
+    initdb -D $MYRIA_DATA
+    export MYRIA_NAME
     export HOSTNAME
     awk '{ print "host " ENVIRON["MYRIA_NAME"] " uwdb " ENVIRON["HOSTNAME"] " md5" }' $MYRIA_NODES \
          >> $MYRIA_DATA/pg_hba.conf
@@ -231,7 +231,7 @@ done
 
 case $MYRIA_MODE in
   ("START_WORKER") start_worker ;;
-  ("START_COORDINATOR") start_web ;; #start_coordinator && start_web ;;
+  ("START_COORDINATOR") start_coordinator && start_web ;;
   (*) case $1 in
         ("start") shift && start $@ ;;
         ("stop") shift && terminate $@ ;;

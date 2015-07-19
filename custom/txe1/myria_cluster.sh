@@ -119,7 +119,8 @@ echo "Launching Myria webserver on `hostname`"
 echo "------------------------------------------------------"
 
 MYRIA_BASE=${MYRIA_BASE=/state/partition1/myria}
-MYRIA_STACK=$MYRIA_BASE/stack                                                     MYRIA_HTTP_PORT=${MYRIA_HTTP_PORT=8088}
+MYRIA_STACK=$MYRIA_BASE/stack
+MYRIA_HTTP_PORT=${MYRIA_HTTP_PORT=8088}
 GAE_ADMIN_PORT=${GAE_ADMIN_PORT=8089}
 
 nohup \
@@ -130,7 +131,9 @@ nohup \
     --datastore_path $MYRIA_STACK/myria-web/database \
     --logs_path $MYRIA_STACK/myria-web/logs \
     --skip_sdk_update_check true \
-   $MYRIA_STACK/myria-web/appengine > $MYRIA_STACK/myria-web/stdout 2>&1 &
+   $MYRIA_STACK/myria-web/appengine \
+     < /dev/null \
+     > $MYRIA_STACK/myria-web/stdout &
 }
 
 

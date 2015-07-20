@@ -28,6 +28,10 @@ COORDINATOR=$1
 WORKERS=$@
 WORKER_FILE="${TMPDIR-/tmp}/myria-nodes"
 
+MYRIA_HTTP_PORT=${MYRIA_HTTP_PORT=8088}
+GATEWAY_HTTP_PORT=${GATEWAY_HTTP_PORT=8889}
+GATEWAY_NODE=${GATEWAY_NODE=login-1}
+
 #set -e
 rm -f $WORKER_FILE
 
@@ -43,6 +47,10 @@ scp -q $WORKER_FILE $COORDINATOR:$WORKER_FILE
 { echo "MYRIA_MODE=START_COORDINATOR" ; \
   cat $MYRIA_CONFIG `basename "$0"` ; } | \
     ssh $COORDINATOR 'bash -es'
+
+echo "Creating SSH tunnel from $GATEWAY_NODE:$GATEWAY_HTTP_PORT to $COORDINATOR:$MYRIA_HTTP_PORT"
+ssh -N -L $GATEWAY_HTTP_PORT:$COORDINATOR:$MYRIA_HTTP_PORT \
+          `whoami`@$GATEWAY_NODE &
 }
 
 
@@ -58,6 +66,7 @@ MYRIA_STACK=$MYRIA_BASE/stack
 MYRIA_DEPLOY=$MYRIA_BASE/deploy
 MYRIA_NODES="${TMPDIR-/tmp}/myria-nodes"
 MYRIA_BRANCH=${MYRIA_BRANCH=create-deployment}
+MYRIA_REST_PORT=${MYRIA_REST_PORT=8753}
 MYRIA_HEAP_SIZE=${MYRIA_HEAP_SIZE=2g}
 
 POSTGRES_PORT=${POSTGRES_PORT=5433}
@@ -87,10 +96,20 @@ if [ ! -d $MYRIA_STACK ]; then
 fi
 
 if [ ! -d $MYRIA_STACK/myria/build ]; then
-    GRADLE_CACHE=`tar tf $GRADLE_CACHE_ARCHIVE --absolute-names | head -n 1`
-    tar xf $GRADLE_CACHE_ARCHIVE --absolute-names
+    echo "*** Downloading Myria Gradle archive"
+    GRADLE_STAGING_DIRECTORY=`ssh $GATEWAY_NODE mktemp -d`
+    GRADLE_CACHE_DIRECTORY=`mktemp -d`
+    ssh $GATEWAY_NODE "wget $GRADLE_CACHE_ARCHIVE \
+                              -qO $GRADLE_STAGING_DIRECTORY/gradle.tar.gz && \
+                       tar xf $GRADLE_STAGING_DIRECTORY/gradle.tar.gz \
+                              -C $GRADLE_STAGING_DIRECTORY"
+    rsync -al $GATEWAY_NODE:$GRADLE_STAGING_DIRECTORY/*/gradle.*/. \
+              $GRADLE_CACHE_DIRECTORY
 
-    $MYRIA_STACK/myria/gradlew --project-dir=$MYRIA_STACK/myria --gradle-user-home=$GRADLE_CACHE --offline jar
+    echo "*** Begin Myria compilation"
+    $MYRIA_STACK/myria/gradlew --project-dir=$MYRIA_STACK/myria \
+                               --gradle-user-home=$GRADLE_CACHE_DIRECTORY/ \
+                               --offline jar
 fi
 
 export PATH=/usr/java/jdk1.7.0_51/bin:$PATH
@@ -100,6 +119,7 @@ mkdir -p $MYRIA_DEPLOY
 cd $MYRIA_STACK/myria/myriadeploy && \
     ./create_deployment.py \
         --name $MYRIA_NAME        \
+        --rest-port $MYRIA_REST_PORT \
         --database-password FIXME \
         --database-port $POSTGRES_PORT \
         --heap "$MYRIA_HEAP_SIZE -Djava.net.preferIPv4Stack=true" \

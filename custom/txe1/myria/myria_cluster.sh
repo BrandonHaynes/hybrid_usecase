@@ -166,6 +166,7 @@ echo "------------------------------------------------------"
 MYRIA_NAME=${MYRIA_NAME=myria}
 MYRIA_BASE=${MYRIA_BASE=/state/partition1/myria}
 MYRIA_DATA=$MYRIA_BASE/data
+MYRIA_NODES="${TMPDIR-/tmp}/myria-nodes"
 POSTGRES_PORT=${POSTGRES_PORT=5433}
 
 set +e

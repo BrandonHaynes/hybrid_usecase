@@ -175,7 +175,7 @@ if [ ! -d $MYRIA_DATA ]; then
     mkdir -p $MYRIA_DATA
     initdb -D $MYRIA_DATA
     printf "host $MYRIA_NAME uwdb $HOSTNAME md5\n" \
-        >> $POSTGRES_DATA/pg_hba.conf
+        >> $MYRIA_DATA/pg_hba.conf
 fi
 
 echo "Launch Postgres"

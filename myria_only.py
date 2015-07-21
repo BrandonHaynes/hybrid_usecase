@@ -230,7 +230,7 @@ def ensure_symbols_relation(arguments):
       query.wait_for_completion(timeout=3600)
     except AttributeError as e:
       if query.status != 'SUCCESS': raise e
-    return arguments.myria_connection.get_query_status(query.query_id)['elapsedNanos'] / 1E9 \
+    return connection.get_query_status(query.query_id)['elapsedNanos'] / 1E9 \
                      if query.status == 'SUCCESS' else None
 
 def execute(query, arguments):

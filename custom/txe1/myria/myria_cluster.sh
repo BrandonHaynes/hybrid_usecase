@@ -67,6 +67,8 @@ MYRIA_DEPLOY=$MYRIA_BASE/deploy
 MYRIA_NODES="${TMPDIR-/tmp}/myria-nodes"
 MYRIA_BRANCH=${MYRIA_BRANCH=create-deployment}
 MYRIA_REST_PORT=${MYRIA_REST_PORT=8753}
+MYRIA_COORDINATOR_PORT=${MYRIA_COORDINATOR_PORT=9001}
+MYRIA_WORKER_BASE_PORT=${MYRIA_WORKER_BASE_PORT=8001}
 MYRIA_HEAP_SIZE=${MYRIA_HEAP_SIZE=2g}
 
 POSTGRES_PORT=${POSTGRES_PORT=5433}
@@ -120,6 +122,8 @@ cd $MYRIA_STACK/myria/myriadeploy && \
     ./create_deployment.py \
         --name $MYRIA_NAME        \
         --rest-port $MYRIA_REST_PORT \
+        --coordinator-port $MYRIA_COORDINATOR_PORT \
+        --worker-base-port $MYRIA_WORKER_BASE_PORT \
         --database-password FIXME \
         --database-port $POSTGRES_PORT \
         --heap "$MYRIA_HEAP_SIZE -Djava.net.preferIPv4Stack=true" \

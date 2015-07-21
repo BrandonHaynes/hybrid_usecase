@@ -111,6 +111,21 @@ def myria_filename(arguments, worker, index):
         worker=worker,
         filename=get_transform_name(arguments, index))
 
+def ensure_symbols_relation(arguments):
+    query = MyriaQuery.submit("""
+      singleton_symbols = empty(id:int, index:int, value:int);
+      shuffled_symbols = [from singleton_symbols emit id, index, value, count(*)];
+      symbols = [from shuffled_symbols emit id, index, value];
+      store(symbols, symbols);
+      """, connection=arguments.myria_connection)
+    try:
+      query.wait_for_completion(timeout=3600)
+    except AttributeError as e:
+      if query.status != 'SUCCESS': raise e
+    return arguments.myria_connection.get_query_status(query.query_id)['elapsedNanos'] / 1E9 \
+                     if query.status == 'SUCCESS' else None
+
+
 ###########################################################################
 # SciDB
 ###########################################################################
@@ -285,6 +300,7 @@ if __name__ == '__main__':
     print 'INFO: Hybrid NFS version assumes a symbolic links exists at /home/scidb/# pointing to /mnt/scidb/###/#/out'
 
     build_input(arguments)
+    ensure_symbols_relation(arguments)
 
     restart_scidb(arguments)
     warm_array(arguments)

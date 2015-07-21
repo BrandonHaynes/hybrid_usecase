@@ -218,6 +218,20 @@ def warm_relation(arguments):
       if query.status != 'SUCCESS': raise e
     print 'Warmed input relation (%s)' % arguments.name
 
+def ensure_symbols_relation(arguments):
+    query = MyriaQuery.submit("""
+      singleton_symbols = empty(id:int, index:int, value:int);
+      shuffled_symbols = [from singleton_symbols emit id, index, value, count(*)];
+      symbols = [from shuffled_symbols emit id, index, value];
+      store(symbols, symbols);
+      """, connection=arguments.myria_connection)
+    try:
+      query.wait_for_completion(timeout=3600)
+    except AttributeError as e:
+      if query.status != 'SUCCESS': raise e
+    return arguments.myria_connection.get_query_status(query.query_id)['elapsedNanos'] / 1E9 \
+                     if query.status == 'SUCCESS' else None
+
 def execute(query, arguments):
     connection = MyriaConnection(rest_url=arguments.url, execution_url=arguments.execution_url)
     query = MyriaQuery.submit(
@@ -265,6 +279,7 @@ if __name__ == "__main__":
     arguments = parse_arguments(sys.argv[1:])
 
     restart_myria(arguments)
+    ensure_symbols_relation(arguments)
     files = create_input_files(arguments)
     copy_files(files, arguments)
     ingest(files, arguments)

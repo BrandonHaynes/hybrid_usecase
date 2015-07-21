@@ -174,10 +174,8 @@ set +e
 if [ ! -d $MYRIA_DATA ]; then
     mkdir -p $MYRIA_DATA
     initdb -D $MYRIA_DATA
-    export MYRIA_NAME
-    export HOSTNAME
-    awk '{ print "host " ENVIRON["MYRIA_NAME"] " uwdb " ENVIRON["HOSTNAME"] " md5" }' $MYRIA_NODES \
-         >> $MYRIA_DATA/pg_hba.conf
+    printf "host $MYRIA_NAME uwdb $HOSTNAME md5\n" \
+        >> $POSTGRES_DATA/pg_hba.conf
 fi
 
 echo "Launch Postgres"

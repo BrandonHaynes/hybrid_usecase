@@ -219,12 +219,13 @@ def warm_relation(arguments):
     print 'Warmed input relation (%s)' % arguments.name
 
 def ensure_symbols_relation(arguments):
+    connection = MyriaConnection(rest_url=arguments.url, execution_url=arguments.execution_url)
     query = MyriaQuery.submit("""
       singleton_symbols = empty(id:int, index:int, value:int);
       shuffled_symbols = [from singleton_symbols emit id, index, value, count(*)];
       symbols = [from shuffled_symbols emit id, index, value];
       store(symbols, symbols);
-      """, connection=arguments.myria_connection)
+      """, connection=connection)
     try:
       query.wait_for_completion(timeout=3600)
     except AttributeError as e:

@@ -182,7 +182,8 @@ fi
 echo "Launch Postgres"
 echo "pg_ctl -D $MYRIA_DATA -o \"-h '*' -p $POSTGRES_PORT\" start"
 pg_ctl -p $POSTGRES_PORT -D $MYRIA_DATA status || \
-    (pg_ctl -D $MYRIA_DATA -o "-h '*' -p $POSTGRES_PORT" start & \
+    ((pg_ctl -D $MYRIA_DATA -o "-h '*' -p $POSTGRES_PORT" start \
+          2>&1 > $MYRIA_DATA/init-postgres.log) & \
      sleep 5 && \
      pg_ctl -p $POSTGRES_PORT -D $MYRIA_DATA status)
 if [ $? -ne 0 ]; then

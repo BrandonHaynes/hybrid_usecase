@@ -28,12 +28,9 @@ groups = [from vectors emit
                  int(floor(time/2)) as time,
                  HarrTransformGroupBy(time, value) as [coefficient, mean]];
 
-coefficients = [from groups emit id, coefficient];
-range = [from vectors emit max(value) - min(value) as high, min(value) - max(value) as low];
-
-histogram = [from coefficients, range
+histogram = [from groups
              emit id,
-                  bin(coefficient, high, low) as index,
-                  count(bin(coefficient, high, low)) as value];
+                  bin(coefficient, 1, 0) as index,
+                  count(bin(coefficient, 1, 0)) as value];
 
 sink(histogram);

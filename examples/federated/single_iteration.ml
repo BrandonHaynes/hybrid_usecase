@@ -1,5 +1,5 @@
-const bins: {bins};
-vectors = scan({relation});
+const bins: 10;
+vectors = scan(vectors);
 
 -------------------------
 -- Constants + Functions
@@ -19,11 +19,11 @@ def difference(current, previous, previous_time, time):
 ------------------------------------------------------------------------------------
 -- Harr Transform
 ------------------------------------------------------------------------------------
-uda HarrTransformGroupBy(alpha, time, x) {{
+uda HarrTransformGroupBy(alpha, time, x) {
   [0.0 as coefficient, 0.0 as _sum, 0 as _count, -1 as _time];
   [difference(x, coefficient, _time, time), _sum + x, _count + 1, time];
   [coefficient, _sum / int(_count * alpha)];
-}};
+};
 
 groups = [from vectors emit
                  id,

@@ -1,0 +1,15 @@
+create temp array transform_1<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:127,256,0];
+create temp array out_transform_1<value:int64 null>[id=0:599,256,0, bucket=0:9,4294967296,0];
+
+consume(
+  redimension(
+    store(
+      regrid(
+        scan(input),
+        1, 2,
+        avg(value), bin1(value)),
+        transform_1),
+    out_transform_1,
+    signed_count(bucket) as value)
+  );
+

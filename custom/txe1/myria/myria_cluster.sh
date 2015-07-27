@@ -76,43 +76,28 @@ GRADLE_CACHE_ARCHIVE=${GRADLE_CACHE_ARCHIVE=https://drive.google.com/uc?export=d
 GOOGLE_APPENGINE_URL=${GOOGLE_APPENGINE_URL=url_not_specified}
 GATEWAY_NODE=${GATEWAY_NODE=login-1}
 MYRIA_STACK_URL=${MYRIA_STACK_URL=https://github.com/uwescience/myria-stack}
+MYRIA_STAGING=$MYRIA_BASE/stage`mktemp -d`
 
-if [ ! -d $MYRIA_STACK ]; then
-    MYRIA_STAGING=`mktemp -d`
-    echo "git clone $MYRIA_STACK_URL $MYRIA_STAGING && \
-          cd $MYRIA_STAGING && \
-            git submodule update --init --recursive && \
-            git submodule foreach --recursive git checkout master && \
-            git --git-dir=$MYRIA_STAGING/myria/.git checkout $MYRIA_BRANCH && \
-          cd $MYRIA_STAGING/myria-web && \
-            git submodule update --init --recursive &&
-            git submodule foreach --recursive git checkout master" \
-      | ssh $GATEWAY_NODE 'bash -es'
+echo "*** Clone & Compile Myria via $GATEWAY_NODE"
+echo "git clone $MYRIA_STACK_URL $MYRIA_STAGING && \
+      cd $MYRIA_STAGING && \
+        git submodule update --init --recursive && \
+        git submodule foreach --recursive git checkout master && \
+        git --git-dir=$MYRIA_STAGING/myria/.git checkout $MYRIA_BRANCH && \
+      cd $MYRIA_STAGING/myria-web && \
+        git submodule update --init --recursive && \
+        git submodule foreach --recursive git checkout master && \
+        $MYRIA_STAGING/myria/gradlew \
+          --gradle-user-home=$MYRIA_STAGING/myria \
+          --project-dir=$MYRIA_STAGING/myria jar" \
+  | ssh $GATEWAY_NODE 'bash -es'
 
-    echo "wget  -q  $GOOGLE_APPENGINE_URL -O $MYRIA_STAGING/gae.zip && \
-          unzip -qd $MYRIA_STAGING $MYRIA_STAGING/gae.zip && \
-          rm $MYRIA_STAGING/gae.zip" \
-      | ssh $GATEWAY_NODE 'bash -es'
+echo "wget  -q  $GOOGLE_APPENGINE_URL -O $MYRIA_STAGING/gae.zip && \
+      unzip -qd $MYRIA_STAGING $MYRIA_STAGING/gae.zip && \
+      rm $MYRIA_STAGING/gae.zip" \
+  | ssh $GATEWAY_NODE 'bash -es'
 
-    rsync -al $GATEWAY_NODE:$MYRIA_STAGING/. $MYRIA_STACK
-fi
-
-if [ ! -d $MYRIA_STACK/myria/build ]; then
-    echo "*** Downloading Myria Gradle archive"
-    GRADLE_STAGING_DIRECTORY=`ssh $GATEWAY_NODE mktemp -d`
-    GRADLE_CACHE_DIRECTORY=`mktemp -d`
-    ssh $GATEWAY_NODE "wget $GRADLE_CACHE_ARCHIVE \
-                              -qO $GRADLE_STAGING_DIRECTORY/gradle.tar.gz && \
-                       tar xf $GRADLE_STAGING_DIRECTORY/gradle.tar.gz \
-                              -C $GRADLE_STAGING_DIRECTORY"
-    rsync -al $GATEWAY_NODE:$GRADLE_STAGING_DIRECTORY/*/gradle.*/. \
-              $GRADLE_CACHE_DIRECTORY
-
-    echo "*** Begin Myria compilation"
-    $MYRIA_STACK/myria/gradlew --project-dir=$MYRIA_STACK/myria \
-                               --gradle-user-home=$GRADLE_CACHE_DIRECTORY/ \
-                               --offline jar
-fi
+rsync -al $GATEWAY_NODE:$MYRIA_STAGING/. $MYRIA_STACK
 
 export PATH=/usr/java/jdk1.7.0_51/bin:$PATH
 export PYTHONPATH=$MYRIA_STACK/myria-python:$PYTHONPATH

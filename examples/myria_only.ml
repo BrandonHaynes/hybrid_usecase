@@ -25,11 +25,11 @@ symbols = empty(id:int, index:int, value:int);
 ------------------------------------------------------------------------------------
 -- Harr Transform
 ------------------------------------------------------------------------------------
-uda HarrTransformGroupBy(alpha, time, x) {{
+uda HarrTransformGroupBy(alpha, time, x) {
   [0.0 as coefficient, 0.0 as _sum, 0 as _count, -1 as _time];
   [difference(x, coefficient, _time, time), _sum + x, _count + 1, time];
   [coefficient, _sum / int(_count * alpha)];
-}};
+};
 
 iterations = [from vectors where id = test_vector_id emit 0 as i, int(ceil(log2(count(*)))) as total];
 

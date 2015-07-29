@@ -25,7 +25,11 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         if self.path in self.PASSTHROUGH:
             self.output(self.path.strip('/'))
         elif self.path.startswith('/execute.html'):
-            self.execute(self.querystring.get('system', '').lower())
+            self.execute('self.querystring.get('system', '').lower()')
+            #self.execute(self.querystring.get('system', '').lower())
+        elif self.path.startswith('/iquery'):
+            self.execute('iquery')
+            #self.execute(self.querystring.get('system', '').lower())
         else:
             self.send_response(404)
             self.end_headers()

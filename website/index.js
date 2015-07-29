@@ -79,8 +79,11 @@ $(function() {
           }).call(this);
   }
 
-  var margin = {top: 5, right: 60, bottom: 20, left: 220},
-      width = $(window).width() - margin.left - margin.right,
+  //var margin = {top: 5, right: 60, bottom: 20, left: 220},
+      //width = $(window).width()/2 - margin.left - margin.right,
+      //height = 50 - margin.top - margin.bottom;
+  var margin = {top: 5, right: 80, bottom: 20, left: 220},
+      width = $(window).width()/2 - margin.left - margin.right,
       height = 50 - margin.top - margin.bottom;
 
   var chart = d3.bullet()
@@ -104,6 +107,7 @@ $(function() {
     var title = svg.append("g")
                    .style("text-anchor", "end")
                    .attr("transform", "translate(-6," + height / 2 + ")")
+                   .attr("class", function(d) { return 'execute-' + d.title.toLowerCase().replace(/[^\w]/g, ''); })
                    .style("cursor", "pointer")
                    .on("mouseover", highlight_system)
                    .on("mouseout", function() { highlight_system() })

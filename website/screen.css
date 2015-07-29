@@ -1,0 +1,58 @@
+.bullet .title {
+	font-size: 11pt;
+	transform: translate(0, 5px);
+}
+
+.subtitle {
+	display: none;
+}
+
+#patient-container {
+	height: 200px;
+	overflow-y: auto;
+}
+
+#similar-patients, #performance {
+	display: none;
+}
+
+.patient-selection ul li {
+	font-size: 140%;
+	cursor: pointer;
+	margin-left: 2em;
+}
+
+.patient-selection ul li .icon {
+	height: 20px;
+	width: 20px;
+	display: inline-block;
+	position: relative;
+	top: 3px;
+	border-radius: 16px;
+}
+
+.patient-selection ul li#execute-myria .icon,
+.patient-selection ul li#execute-hybrid-csv .icon-right,
+.patient-selection ul li#execute-hybrid-binary .icon-right {
+	background-color: rgb(106, 61, 154);
+}
+
+.patient-selection ul li#execute-scidb .icon,
+.patient-selection ul li#execute-hybrid-csv .icon-left,
+.patient-selection ul li#execute-hybrid-binary .icon-left {
+	background-color: rgb(31, 120, 180);
+}
+
+.patient-selection ul li .icon-right {
+	width: 10px;
+	border-radius: 0 16px 16px 0;
+}
+
+.patient-selection ul li .icon-left {
+	width: 10px;
+	border-radius: 16px 0 0 16px;
+}
+
+#execute_myria {
+
+}

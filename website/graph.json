@@ -1,7 +1,7 @@
 {
     "nodes":[
       {"name":"Iterative Partitioned Aggregate","width":200,"height":100, "sx":50, "sy":30, "lx":130, "ly":62, "color":"rgb(253, 191, 111)", "class":"dwt"},
-      {"name":"Concat","width":80,"height":100, "sx":230, "sy":30, "lx":250, "ly":62, "color":"rgb(253, 191, 111)", "class":"concat"},
+      {"name":"Union","width":80,"height":100, "sx":230, "sy":30, "lx":250, "ly":62, "color":"rgb(253, 191, 111)", "class":"concat"},
 
       {"name":"Term Frequency","width":120,"height":100, "sx":350, "sy":30, "lx":390, "ly":62, "color":"rgb(178, 223, 138)", "class":"tf"},
       {"name":"Inverse Document Frequency","width":200,"height":100, "sx":450, "sy":30, "lx":530, "ly":62, "color":"rgb(178, 223, 138)", "class":"idf"},

@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Hybrid Query Demo</title>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="cola.min.js"></script>
+
+  <script type="text/javascript" src="bullet.js"></script>
+  <script type="text/javascript" src="workflow.js"></script>
+  <script type="text/javascript" src="screen.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="bullet.css" />
+  <link rel="stylesheet" type="text/css" href="screen.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
+</head>
+
+<body style="overflow-x: hidden">
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">BigDAWG Heavy Analytics with Automatically-Generated Connectors</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="index.html">Home</a></li>
+          <li><a href="https://github.com/BrandonHaynes/hybrid_usecase">Repository</a></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Queries <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="myria.html">Myria</a></li>
+              <li><a href="scidb.html">SciDB</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="hybrid-csv.html">SciDB → Myria (CSV)</a></li>
+              <li><a href="hybrid-binary.html">SciDB → Myria (Binary)</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div style="padding-top: 1em">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="patient-selection">
+          <h2>1. Patient Selection</h2>
+          <div id="patient-container" class="table-responsive">
+            <table id="patients" class="table table-striped table-hover table-condensed">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Date of Birth</th>
+                  <th>Gender</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="patient-selection">
+          <h2>2. Execution strategy</h2>
+          <ul class="list-unstyled">
+            <li id="execute-myria">
+              <div class="icon"></div>
+              Myria Only</li>
+            <li id="execute-scidb">
+              <div class="icon"></div>
+              SciDB Only</li>
+            <li id="execute-hybrid-csv">
+              <div class="icon icon-left"></div><div class="icon icon-right"></div>
+              SciDB → Myria (CSV)</li>
+            <li id="execute-hybrid-binary">
+              <div class="icon-left icon"></div><div class="icon-right icon"></div>
+              SciDB → Myria (Binary)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="workflow">
+    <h2>3. Analytic similarity workflow</h2>
+    <div id="workflow-container"></div>
+  </div>
+
+  <div>
+    <div class="row">
+      <div id="performance" class="col-md-6">
+        <h2>4. Performance</h2>
+        <div id="execution">
+        </div>
+      </div>
+      <div id="similar-patients" class="col-md-6">
+        <h2>5. Hemodynamically-similar patients</h2>
+        <div class="table-responsive">
+          <table id="results" class="table table-striped table-hover table-condensed">
+            <tr>
+              <th>#</th>
+              <th>Date of Birth</th>
+              <th>Gender</th>
+              <th>ECG Waveform</th>
+              <th>Status</th>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

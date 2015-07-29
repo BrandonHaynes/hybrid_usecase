@@ -15,10 +15,10 @@ class DemoTCPServer(SocketServer.TCPServer):
         self.logger = logging.getLogger('DemoServer')
 
 class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
-    PASSTHROUGH = ['/index.html', '/myria.html', '/scidb.html', '/hybrid-csv.html', '/hybrid-binary.html',
-                   '/index.js', '/workflow.js', '/bullet.js', '/cola.min.js', '/cola.js',
+    PASSTHROUGH = ['/index.html', '/screen.html', '/myria.html', '/scidb.html', '/hybrid-csv.html', '/hybrid-binary.html',
+                   '/index.js', '/workflow.js', '/bullet.js', '/cola.min.js', '/cola.js', '/screen.js',
                    '/cola.min.js.map',
-                   '/bullet.css',
+                   '/bullet.css', '/screen.css',
                    '/bullets.json', '/graph.json']
 
     def do_GET(self):

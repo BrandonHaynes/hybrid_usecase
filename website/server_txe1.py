@@ -39,7 +39,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         if system == 'iquery':
             self.send_response(200)
             self.end_headers()
-            command = ("""{path}/bin/iquery -a -p {port} -q \\"{query}\\" """.format(
+            command = ("""echo {query} | {path}/bin/iquery -a -p {port} """.format(
                 path=self.server.arguments.scidb_path,
                 port=self.server.arguments.scidb_port,
                 query=urllib.unquote(urlparse(self.path).query).replace('+', ' ')))

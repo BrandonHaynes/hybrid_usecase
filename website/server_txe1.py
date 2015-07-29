@@ -42,7 +42,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             command = ("""echo "{query}" | {path}/bin/iquery -a -n -p {port} """.format(
                 path=self.server.arguments.scidb_path,
                 port=self.server.arguments.scidb_port,
-                query=urllib.unquote(urlparse(self.path).query).replace('+', ' ')))
+                query=urllib.unquote(urlparse(self.path).query).replace('csv+', 'csvplus').replace('+', ' ').replace('csvplus', 'csv+')))
 
         elif system == 'myria':
             self.send_response(200)

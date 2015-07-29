@@ -92,7 +92,8 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
         if command:
             # Injection vulnerability!
-            self.wfile.write(subprocess.check_output(prefix + ["ssh " + self.server.arguments.coordinator + " " + command],
+            #self.wfile.write(subprocess.check_output(prefix + ["ssh " + self.server.arguments.coordinator + " " + command],
+            self.wfile.write(subprocess.check_output(prefix + [command],
                              stderr=subprocess.STDOUT))
 
 

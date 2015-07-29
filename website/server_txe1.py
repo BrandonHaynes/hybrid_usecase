@@ -33,7 +33,16 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def execute(self, system):
         prefix = ['ssh', self.server.arguments.login_node]
 
-        if system == 'myria':
+        if system == 'iquery':
+            self.send_response(200)
+            self.end_headers()
+            command = ("""ssh {coordinator} "{path}/bin/iquery -a -p {port} -q '{query}'" """.format(
+                coordinator=self.server.arguments.coordinator,
+                path=self.server.arguments.path,
+                port=self.server.arguments.port,
+                query=urlparse(self.path).query))
+
+        elif system == 'myria':
             self.send_response(200)
             self.end_headers()
             command = (" ""PYTHONPATH={install_path}/../myria-python:$PYTHONPATH ; "

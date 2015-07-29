@@ -41,7 +41,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             self.end_headers()
             command = ("""{path}/bin/iquery -a -p {port} -q "{query}" """.format(
                 path=self.server.arguments.scidb_path,
-                port=self.server.arguments.port,
+                port=self.server.arguments.scidb_port,
                 query=urllib.unquote(urlparse(self.path).query).replace('+', ' ')))
 
         elif system == 'myria':

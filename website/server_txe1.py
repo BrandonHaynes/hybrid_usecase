@@ -36,8 +36,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         if system == 'iquery':
             self.send_response(200)
             self.end_headers()
-            command = ("""ssh {coordinator} "{path}/bin/iquery -a -p {port} -q '{query}'" """.format(
-                coordinator=self.server.arguments.coordinator,
+            command = ("""{path}/bin/iquery -a -p {port} -q '{query}""".format(
                 path=self.server.arguments.path,
                 port=self.server.arguments.port,
                 query=urlparse(self.path).query))

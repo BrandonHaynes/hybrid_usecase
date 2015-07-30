@@ -138,7 +138,7 @@ function is_stable(id) {
 }
 
 function execute(query, callback, error) {
-   url="http://128.52.183.245:8080/bigdawg/query"
+   url="http://localhost:8080/bigdawg/query"
 
    $.ajax({
       type: 'POST',

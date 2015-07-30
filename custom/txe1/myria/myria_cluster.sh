@@ -76,11 +76,13 @@ GRADLE_CACHE_ARCHIVE=${GRADLE_CACHE_ARCHIVE=https://drive.google.com/uc?export=d
 GOOGLE_APPENGINE_URL=${GOOGLE_APPENGINE_URL=url_not_specified}
 GATEWAY_NODE=${GATEWAY_NODE=login-1}
 MYRIA_STACK_URL=${MYRIA_STACK_URL=https://github.com/uwescience/myria-stack}
+MYRIA_STACK_BRANCH=${MYRIA_STACK_BRANCH=master}
 MYRIA_STAGING=$MYRIA_BASE/stage`mktemp -d`
 
 echo "*** Clone & Compile Myria via $GATEWAY_NODE"
 echo "git clone $MYRIA_STACK_URL $MYRIA_STAGING && \
       cd $MYRIA_STAGING && \
+        git checkout $MYRIA_STACK_BRANCH && \
         git submodule update --init --recursive && \
         git submodule foreach --recursive git checkout master && \
         git --git-dir=$MYRIA_STAGING/myria/.git checkout $MYRIA_BRANCH && \

@@ -13,6 +13,24 @@ ssh $1 "$SCIDB_BASE/bin/iquery -p $SCIDB_BASE_PORT -anq \"load_library('bin')\""
 #ssh node-038 "/state/partition1/scidb-bhaynes/bin/iquery -p $SCIDB_BASE_PORT -anq 'store(build(<value: double>[id=0:599,1,0, time=0:255,256,0], (double(id+1) / (time+1)) / 600 - 1), SciDB__Demo__Vectors)'"
 
 echo ------------------------------------------------------
+echo Creating SciDB symlinks
+echo ------------------------------------------------------
+WORKERS=$@
+NODE_ID=0
+
+for node in $WORKERS
+do
+    echo "*** $node"
+    for i in $(seq 0 $SCIDB_WORKERS)
+    do
+    	echo Worker $i
+		echo ssh $node "mkdir -p $SCIDB_BASE/data/00$NODE_ID//out"
+		ssh $node "mkdir -p $SCIDB_BASE/data/00$NODE_ID//out"
+    done
+    NODE_ID=$(NODE_ID+1)
+done
+
+echo ------------------------------------------------------
 echo Starting demo screen webserver
 echo ------------------------------------------------------
 ssh $1 "nohup python ~/hybrid_usecase/website/server_txe1.py --scidb-path $SCIDB_BASE" &
@@ -27,3 +45,5 @@ echo Required SSH tunnels:
 echo ------------------------------------------------------
 echo ssh txe1-login.mit.edu -L 8080:172.16.4.60:8080 -N -f
 echo ssh txe1-login.mit.edu -L 8751:$1:8751 -N -f
+
+

@@ -24,10 +24,10 @@ do
     for i in $(seq 0 $SCIDB_WORKERS)
     do
     	echo Worker $i
-		echo ssh $node "mkdir -p $SCIDB_BASE/data/00$NODE_ID//out"
-		ssh $node "mkdir -p $SCIDB_BASE/data/00$NODE_ID//out"
+		echo ssh $node "mkdir -p $SCIDB_BASE/data/00$NODE_ID/$i/out"
+		ssh $node "mkdir -p $SCIDB_BASE/data/00$NODE_ID/$i/out"
     done
-    NODE_ID=$(NODE_ID+1)
+    ((NODE_ID++))
 done
 
 echo ------------------------------------------------------

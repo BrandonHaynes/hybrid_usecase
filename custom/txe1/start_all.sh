@@ -1,7 +1,8 @@
 source scidb/scidb.conf
 source myria/myria.conf
 
-. scidb/scidb_cluster.sh start "$@" --config scidb/scidb.conf
+cd scidb
+. scidb_cluster.sh start "$@"
 #. myria/myria_cluster.sh start "$@" --config scidb/myria.conf
 
 ssh $1 "$SCIDB_BASE/bin/iquery -p $SCIDB_BASE_PORT -anq 'store(build(<value: double>[id=0:599,1,0, time=0:255,256,0], (double(id+1) / (time+1)) / 600 - 1), SciDB__Demo__Vectors)'"

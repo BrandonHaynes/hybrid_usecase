@@ -12,7 +12,7 @@ ssh $1 "$SCIDB_BASE/bin/iquery -p $SCIDB_BASE_PORT -anq \"load_library('bin')\""
 echo ------------------------------------------------------
 echo Starting demo screen webserver
 echo ------------------------------------------------------
-ssh $1 nohup python ~/hybrid_webserver/website/server_txe1.py --scidb-path $SCIDB_BASE
+ssh $1 nohup python ~/hybrid_usecase/website/server_txe1.py --scidb-path $SCIDB_BASE
 
 echo ------------------------------------------------------
 echo Ensuring Myria-Web webserver

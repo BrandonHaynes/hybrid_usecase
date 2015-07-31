@@ -1,6 +1,6 @@
 [
-  {"title":"SciDB","hideScale":true,"ranges":[17.5,17.5],"measures":[0,0],"markers":[20], "url": "execute.html?system=scidb", "bigdawg_url": "http://localhost:8080", "expression": "execution time: ([\\d\\.]+)", "offset": 0},
-  {"title":"Myria","hideScale":true,"ranges":[14,14],"measures":[0,0],"markers":[20], "url": "execute.html?system=myria", "bigdawg_url": "http://localhost:8080", "expression": "execution time: ([\\d\\.]+)", "offset": 7},
-  {"title":"Hybrid SciDB → Myria (CSV)","hideScale":true,"ranges":[8,8],"measures":[0,0],"markers":[20], "url": "execute.html?system=hybrid-csv", "bigdawg_url": "http://localhost:8080", "expression": "execution time: ([\\d\\.]+)", "offset": 0},
+  {"title":"SciDB","hideScale":true,"ranges":[17.5,17.5],"measures":[0,0],"markers":[20], "url": "execute.html?system=scidb", "bigdawg_url": "http://localhost:8080/bigdawg/query", "expression": "execution time: ([\\d\\.]+)", "offset": 0},
+  {"title":"Myria","hideScale":true,"ranges":[14,14],"measures":[0,0],"markers":[20], "url": "execute.html?system=myria", "bigdawg_url": "http://localhost:8080/bigdawg/query", "expression": "execution time: ([\\d\\.]+)", "offset": 7},
+  {"title":"Hybrid SciDB → Myria (CSV)","hideScale":true,"ranges":[8,8],"measures":[0,0],"markers":[20], "url": "execute.html?system=hybrid-csv", "bigdawg_url": "http://localhost:8080/bigdawg/query", "expression": "execution time: ([\\d\\.]+)", "offset": 0},
   {"title":"Hybrid SciDB → Myria (Binary)","ranges":[7,7],"measures":[0,0],"markers":[20], "offset": 0}
 ]

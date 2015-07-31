@@ -9,7 +9,7 @@
       {"name":"Conditioning","width":100,"height":100, "sx":680, "sy":30, "lx":710, "ly":62, "color":"rgb(251, 154, 153)", "class":"condition"},
       {"name":"Correlations","width":100,"height":100, "sx":760, "sy":30, "lx":790, "ly":62, "color":"rgb(251, 154, 153)", "class":"correlations"},
 
-      {"name":"Sink","width":100,"height":100, "sx":860, "sy":30, "lx":890, "ly":62, "color":"rgb(255, 255, 153)", "class":"sink"}
+      {"name":"Sink","width":100,"height":100, "sx":860, "sy":30, "lx":890, "ly":62, "color":"rgb(255, 255, 153)", "class":"Top-𝑘"}
     ],
     "links":[
       {"source":0,"target":1, "sx1":200, "sy1":60, "sx2":223, "sy2":60},

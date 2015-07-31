@@ -308,4 +308,6 @@ if __name__ == '__main__':
     scidb_time = time_scidb(scidb_query(arguments), arguments)
     myria_time = time_myria(myria_plan(arguments), arguments)
 
+    print 'SciDB execution time: %0.2f' % scidb_time
+    print 'Myria execution time: %0.2f' % myria_time
     print 'Hybrid execution time: %0.2f' % (scidb_time + myria_time)

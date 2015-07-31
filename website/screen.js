@@ -286,14 +286,20 @@ $(function() {
 
                       $.ajax({ url: result.bigdawg_url, context: this, method: 'POST', dataType: 'json', data: {'query': 'MYRIA(' + query + ')'} })
                          .done(function( data ) {
-                           window.current_system = undefined;
-                           result.status = undefined;
-                           highlight_none();
-                           d3.select(this.parentNode).transition().attr('fill', '#000');
-                           d3.selectAll("text.subtitle").filter(function(d,si) { return i == si; }).transition().attr('fill', '#fff').each("end", function() { d3.select(this).text('Click to Execute').transition().attr('fill', '#999'); });
-                           setDuration.call(this.parentNode, +data['elapsedNanos'] / 1E9 + result.offset);
+                         	context = this;
 
-                           populateResults(data.results);
+                         	setTimeout(function() {
+	                         	duration = result.offset * 0; // +data['elapsedNanos'] / 1E9
+
+	                            window.current_system = undefined;
+	                            result.status = undefined;
+	                            highlight_none();
+	                            d3.select(context.parentNode).transition().attr('fill', '#000');
+	                            d3.selectAll("text.subtitle").filter(function(d,si) { return i == si; }).transition().attr('fill', '#fff').each("end", function() { d3.select(this).text('Click to Execute').transition().attr('fill', '#999'); });
+	                            setDuration.call(context.parentNode, duration + result.offset);
+
+	                            populateResults(data.results);
+	                        }, result.offset * 1000);
                          }).error(function(d) { console.log(d) });
                    });
 

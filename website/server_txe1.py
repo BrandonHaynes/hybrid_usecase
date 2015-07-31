@@ -13,7 +13,7 @@ class DemoTCPServer(SocketServer.TCPServer):
         SocketServer.TCPServer.__init__(self, address, handler)
 
         self.arguments = arguments
-        self.logger = logging.getLogger('DemoServer')
+        self.logger = logging.getLogger('DemoTCPServer')
 
 class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     PASSTHROUGH = ['/index.html', '/screen.html', '/myria.html', '/scidb.html', '/hybrid-csv.html', '/hybrid-binary.html',
@@ -49,7 +49,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
         if command:
             self.server.logger.debug('command: ' + str(command))
-            self.wfile.write(subprocess.check_output([command],
+            self.wfile.write(subprocess.check_output(prefix + [command],
                              stderr=subprocess.STDOUT))
 
 

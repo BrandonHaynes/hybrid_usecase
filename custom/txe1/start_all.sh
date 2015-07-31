@@ -3,7 +3,7 @@ source myria/myria.conf
 
 cd scidb
 ./scidb_cluster.sh start "$@"
-./myria/myria_cluster.sh start "$@"
+./myria_cluster.sh start "$@"
 
 echo ------------------------------------------------------
 echo Initializing SciDB with arrays and custom aggregates

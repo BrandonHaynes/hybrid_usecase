@@ -25,7 +25,8 @@ do
     do
     	echo Worker $i
     	WORKER_DIR=$SCIDB_BASE/data/00$NODE_ID/$i
-		if [ -d $WORKER_DIR ]; then
+    	ssh $node "[ -d $WORKER_DIR ]"
+		if [ $? -eq 0 ]; then
 			echo ssh $node "mkdir -p $SCIDB_BASE/data/00$NODE_ID/$i/out"
 			ssh $node "mkdir -p $SCIDB_BASE/data/00$NODE_ID/$i/out"
 		fi

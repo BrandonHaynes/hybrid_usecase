@@ -40,7 +40,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             command = ("""{path}/bin/iquery -a -n -p {port} -q "{query}" """.format(
                 path=self.server.arguments.scidb_path,
                 port=self.server.arguments.scidb_port,
-                query=urllib.unquote(urlparse(self.path).query).replace('csv+', 'csvplus').replace('+', ' ').replace('csvplus', 'csv+')))
+                query=urllib.unquote(urlparse(self.path).query).replace('csv+', 'csvplus').replace('+', ' ').replace('csvplus', 'csv+').replace("\\'", "'")))
         else:
             self.send_response(404)
             self.end_headers()
@@ -48,7 +48,8 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             command = None
 
         if command:
-            self.server.logger.debug('command: ' + str(command))
+            with open('/tmp/out', 'w') as f:
+                f.write(command)
             self.wfile.write(subprocess.check_output(prefix + [command],
                              stderr=subprocess.STDOUT))
 

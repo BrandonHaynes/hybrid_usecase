@@ -3,6 +3,7 @@ source myria/myria.conf
 
 cd scidb
 ./scidb_cluster.sh start "$@"
+cd ../myria
 ./myria_cluster.sh start "$@"
 
 echo ------------------------------------------------------

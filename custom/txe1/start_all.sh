@@ -24,8 +24,11 @@ do
     for i in $(seq 0 $SCIDB_WORKERS)
     do
     	echo Worker $i
-		echo ssh $node "mkdir -p $SCIDB_BASE/data/00$NODE_ID/$i/out"
-		ssh $node "mkdir -p $SCIDB_BASE/data/00$NODE_ID/$i/out"
+    	WORKER_DIR=$SCIDB_BASE/data/00$NODE_ID/$i
+		if [ -d $WORKER_DIR ]; then
+			echo ssh $node "mkdir -p $SCIDB_BASE/data/00$NODE_ID/$i/out"
+			ssh $node "mkdir -p $SCIDB_BASE/data/00$NODE_ID/$i/out"
+		fi
     done
     ((NODE_ID++))
 done

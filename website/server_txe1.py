@@ -48,6 +48,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             command = None
 
         if command:
+            print 'command: ' + str(command)
             self.wfile.write(subprocess.check_output([command],
                              stderr=subprocess.STDOUT))
 

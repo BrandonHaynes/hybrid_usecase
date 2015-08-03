@@ -1,64 +1,9 @@
-query = '-- exec myriax \n\
-const test_vector_id: 1; \n\
-const bins: 10; \n\
-vectors = scan(public:adhoc:relation600x256); \n\
-\n\
-const alpha: 1.0;\n\
-\n\
-def log2(x): log(x) / log(2);\n\
-def mod2(x): x - int(x/2)*2;\n\
-def iif(expression, true_value, false_value):\n\
-    case when expression then true_value\n\
-         else false_value end;\n\
-def bucket(x, high, low): greater(least(int((bins-1) * (x - low) / iif(high != low, high - low, 1)),\n\
-                                bins - 1), 0);\n\
-def difference(current, previous, previous_time, time):\n\
-    iif(previous_time >= 0,\n\
-        (current - previous) * iif(previous_time < time, 1, -1),\n\
-        current);\n\
-def idf(w_ij, w_ijN, N): log(N / w_ijN) * w_ij;\n\
-\n\
-symbols = empty(id:int, index:int, value:int);\n\
-\n\
-uda HarrTransformGroupBy(alpha, time, x) {\n\
-  [0.0 as coefficient, 0.0 as _sum, 0 as _count, -1 as _time];\n\
-  [difference(x, coefficient, _time, time), _sum + x, _count + 1, time];\n\
-  [coefficient, _sum / int(_count * alpha)];\n\
-};\n\
-\n\
-iterations = [from vectors where id = test_vector_id emit 0 as i, int(ceil(log2(count(*)))) as total];\n\
-\n\
-do\n\
-    groups = [from vectors emit\n\
-                     id,\n\
-                     int(floor(time/2)) as time,\n\
-                     HarrTransformGroupBy(alpha, time, value) as [coefficient, mean]];\n\
-\n\
-    coefficients = [from groups emit id, coefficient];\n\
-    range = [from vectors emit max(value) - min(value) as high, min(value) - max(value) as low];\n\
-\n\
-    histogram = [from coefficients, range\n\
-                 emit id,\n\
-                      bucket(coefficient, high, low) as index,\n\
-                      count(bucket(coefficient, high, low)) as value];\n\
-    symbols = symbols + [from histogram, iterations emit id, index + i*bins as index, value];\n\
-    vectors = [from groups emit id, time, mean as value];\n\
-\n\
-    iterations = [from iterations emit $0 + 1, $1];\n\
-while [from iterations emit $0 < $1];\n\
-\n\
-sink(symbols);';
-
 queries = {};
 
 function loadQueries() {
-    jQuery.ajax({
-             url: 'federated_query.txt',
-             success: function(data) {
-                 alert(data);
-                 },
-             async: false
-        });
+    jQuery.ajax({ url: 'query.federated.txt', success: function(data) { queries.federated = data; }, async: false });
+    jQuery.ajax({ url: 'query.myria.txt', success: function(data) { queries.myria = data; }, async: false });
+    jQuery.ajax({ url: 'query.scidb.txt', success: function(data) { queries.scidb= data; }, async: false });
 }
 
 function populateStrategy() {
@@ -305,7 +250,7 @@ $(function() {
                             headers: {
                               'Accept': 'application/json',
                               'Content-Type': 'application/json' },
-                            data: JSON.stringify({'query': 'MYRIA(' + query + ')'}) })
+                            data: JSON.stringify({'query': 'MYRIA(' + queries.federated + ')'}) })
                           .done(function( data ) {
                          	context = this;
 

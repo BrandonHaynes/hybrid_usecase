@@ -290,7 +290,7 @@ $(function() {
                               'Content-Type': 'application/json' },
                             data: JSON.stringify({'query': 'MYRIA(' + queries.federated + ')'}) })
                           .done(function( data ) {
-                            endExecutionAnimation.call(this, data, result, i)l
+                            endExecutionAnimation.call(this, data, result, i);
                          	/*
                             context = this;
 

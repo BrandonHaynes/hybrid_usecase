@@ -214,6 +214,30 @@ $(function() {
             .attr('fill', '#000'); });
     }
 
+    function endExecutionAnimation(data, result, index) {
+        context = this;
+
+        setTimeout(function() {
+            duration = result.offset * 0; // +data['elapsedNanos'] / 1E9
+
+            window.current_system = undefined;
+            result.status = undefined;
+            highlight_none();
+            d3.select(context.parentNode).transition().attr('fill', '#000');
+            d3.selectAll("text.subtitle")
+              .filter(function(d,si) { return index == si; })
+              .transition()
+              .attr('fill', '#fff')
+              .each("end", function() {
+                    d3.select(this).text('Click to Execute')
+                      .transition()
+                      .attr('fill', '#999'); });
+            setDuration.call(context.parentNode, duration + result.offset);
+
+            populateResults(data.results);
+        }, result.offset * 1000);
+   }
+
   //var margin = {top: 5, right: 60, bottom: 20, left: 220},
       //width = $(window).width()/2 - margin.left - margin.right,
       //height = 50 - margin.top - margin.bottom;
@@ -266,7 +290,9 @@ $(function() {
                               'Content-Type': 'application/json' },
                             data: JSON.stringify({'query': 'MYRIA(' + queries.federated + ')'}) })
                           .done(function( data ) {
-                         	context = this;
+                            endExecutionAnimation.call(this, data, result, i)l
+                         	/*
+                            context = this;
 
                          	setTimeout(function() {
 	                         	duration = result.offset * 0; // +data['elapsedNanos'] / 1E9
@@ -280,6 +306,7 @@ $(function() {
 
 	                            populateResults(data.results);
 	                        }, result.offset * 1000);
+	                        */
                           }).error(function(d) {
                               console.log(d);
 

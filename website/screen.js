@@ -197,14 +197,14 @@ $(function() {
           }).call(this);
   }
 
-    function startExecutionAnimation(result) {
+    function startExecutionAnimation(result, index) {
       $("#performance").fadeIn();
       result.status = "EXECUTING";
       window.current_system = result;
       setDuration.call(this.parentNode, 0);
 
       d3.selectAll("text.subtitle")
-        .filter(function(d,si) { return i == si; })
+        .filter(function(d,si) { return index == si; })
         .transition()
         .attr('fill', '#fff')
         .each("end", function() {
@@ -254,7 +254,7 @@ $(function() {
 
                       //d3.selectAll("text.subtitle").filter(function(d,si) { return i == si; }).transition().attr('fill', '#fff').each("end", function() { d3.select(this).text('(Executing)').transition().attr('fill', '#000'); });
                       //pulse.call(this.parentNode);
-                      startExecutionAnimation.call(this, result);
+                      startExecutionAnimation.call(this, result, i);
 
                       $.ajax({
                             url: result.bigdawg_url,

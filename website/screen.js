@@ -1,9 +1,9 @@
 queries = {};
 
 function loadQueries() {
-    jQuery.ajax({ url: 'query.federated.txt', success: function(data) { queries.federated = data; }, async: false });
-    jQuery.ajax({ url: 'query.myria.txt', success: function(data) { queries.myria = data; }, async: false });
-    jQuery.ajax({ url: 'query.scidb.txt', success: function(data) { queries.scidb= data; }, async: false });
+    jQuery.ajax({ url: 'queries/federated.txt', success: function(data) { queries.federated = data; }, async: false });
+    jQuery.ajax({ url: 'queries/myria.txt', success: function(data) { queries.myria = data; }, async: false });
+    jQuery.ajax({ url: 'queries/scidb.txt', success: function(data) { queries.scidb= data; }, async: false });
 }
 
 function populateStrategy() {

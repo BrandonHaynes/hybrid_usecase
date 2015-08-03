@@ -49,6 +49,18 @@ while [from iterations emit $0 < $1];\n\
 \n\
 sink(symbols);';
 
+queries = {};
+
+function loadQueries() {
+    jQuery.ajax({
+             url: 'federated_query.txt',
+             success: function(data) {
+                 alert(data);
+                 },
+             async: false
+        });
+}
+
 function populateStrategy() {
 	$('#execute-myria')
 		.on('mouseover', highlight_myria)
@@ -155,6 +167,7 @@ function execute(query, callback, error) {
 }
 
 $(function() {
+    loadQueries();
 	populatePatients();
 	populateStrategy();
 });

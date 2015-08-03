@@ -81,8 +81,8 @@ function populateStrategy() {
 }
 
 function populatePatients() {
-	//execute("RELATION(select to_char(subject_id, '999'), dob, sex from mimic2v26.d_patients limit 5)", function(data) {
-	execute("RELATION(select subject_id, dob, sex from mimic2v26.d_patients order by subject_id limit 20)", function(data) {
+    
+	execute("RELATION(select distinct p.subject_id, dob, sex from mimic2v26.d_patients p inner join patients_to_waveforms w on p.subject_id = w.subject_id where signal_id = 1 order by subject_id)", function(data) {
 	    var rows = d3.select("#patients tbody")
 	                 .selectAll("tr")
 	                 .data(data.tuples)

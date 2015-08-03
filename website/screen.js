@@ -291,27 +291,11 @@ $(function() {
                             data: JSON.stringify({'query': 'MYRIA(' + queries.federated + ')'}) })
                           .done(function( data ) {
                             endExecutionAnimation.call(this, data, result, i);
-                         	/*
-                            context = this;
-
-                         	setTimeout(function() {
-	                         	duration = result.offset * 0; // +data['elapsedNanos'] / 1E9
-
-	                            window.current_system = undefined;
-	                            result.status = undefined;
-	                            highlight_none();
-	                            d3.select(context.parentNode).transition().attr('fill', '#000');
-	                            d3.selectAll("text.subtitle").filter(function(d,si) { return i == si; }).transition().attr('fill', '#fff').each("end", function() { d3.select(this).text('Click to Execute').transition().attr('fill', '#999'); });
-	                            setDuration.call(context.parentNode, duration + result.offset);
-
-	                            populateResults(data.results);
-	                        }, result.offset * 1000);
-	                        */
                           }).error(function(d) {
                               console.log(d);
-
+                              var data = { results: [] };
                               // TODO: temporary
-
+                              endExecutionAnimation.call(this, data, result, i);
 
                           });
                    });

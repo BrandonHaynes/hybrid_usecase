@@ -284,8 +284,16 @@ $(function() {
                       d3.selectAll("text.subtitle").filter(function(d,si) { return i == si; }).transition().attr('fill', '#fff').each("end", function() { d3.select(this).text('(Executing)').transition().attr('fill', '#000'); });
                       pulse.call(this.parentNode);
 
-                      $.ajax({ url: result.bigdawg_url, context: this, method: 'POST', dataType: 'json', data: {'query': 'MYRIA(' + query + ')'} })
-                         .done(function( data ) {
+                      $.ajax({
+                            url: result.bigdawg_url,
+                            context: this,
+                            method: 'POST',
+                            dataType: 'json',
+                            headers: {
+                              'Accept': 'application/json',
+                              'Content-Type': 'application/json' },
+                            data: JSON.stringify({'query': 'MYRIA(' + query + ')'}) })
+                          .done(function( data ) {
                          	context = this;
 
                          	setTimeout(function() {

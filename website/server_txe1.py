@@ -21,7 +21,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                    '/cola.min.js.map',
                    '/bullet.css', '/screen.css',
                    '/bullets.json', '/graph.json',
-                   '/query.federated.txt', '/query.myria.txt', '/query.scidb.txt']
+                   '/queries/federated.txt', '/queries/myria.txt', '/queries/scidb.txt']
 
     def do_GET(self):
         if self.path in self.PASSTHROUGH:

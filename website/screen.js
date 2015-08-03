@@ -202,6 +202,7 @@ $(function() {
       result.status = "EXECUTING";
       window.current_system = result;
       setDuration.call(this.parentNode, 0);
+      pulse.call(this.parentNode);
 
       d3.selectAll("text.subtitle")
         .filter(function(d,si) { return index == si; })

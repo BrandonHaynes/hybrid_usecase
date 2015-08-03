@@ -22,7 +22,7 @@ symbols = empty(id:int, index:int, value:int);\n\
 \n\
 uda HarrTransformGroupBy(alpha, time, x) {\n\
   [0.0 as coefficient, 0.0 as _sum, 0 as _count, -1 as _time];\n\
-  [difference(x, coefficient, _time, time), _sum plus x, _count plus 1, time];\n\
+  [difference(x, coefficient, _time, time), _sum + x, _count + 1, time];\n\
   [coefficient, _sum / int(_count * alpha)];\n\
 };\n\
 \n\
@@ -41,10 +41,10 @@ do\n\
                  emit id,\n\
                       bucket(coefficient, high, low) as index,\n\
                       count(bucket(coefficient, high, low)) as value];\n\
-    symbols = symbols plus [from histogram, iterations emit id, index plus i*bins as index, value];\n\
+    symbols = symbols + [from histogram, iterations emit id, index + i*bins as index, value];\n\
     vectors = [from groups emit id, time, mean as value];\n\
 \n\
-    iterations = [from iterations emit $0 plus 1, $1];\n\
+    iterations = [from iterations emit $0 + 1, $1];\n\
 while [from iterations emit $0 < $1];\n\
 \n\
 sink(symbols);';

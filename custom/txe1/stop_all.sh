@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 source scidb/scidb.conf
 source myria/myria.conf
 

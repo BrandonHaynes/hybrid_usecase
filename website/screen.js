@@ -197,6 +197,23 @@ $(function() {
           }).call(this);
   }
 
+    function startExecutionAnimation(result) {
+      $("#performance").fadeIn();
+      result.status = "EXECUTING";
+      window.current_system = result;
+      setDuration.call(this.parentNode, 0);
+
+      d3.selectAll("text.subtitle")
+        .filter(function(d,si) { return i == si; })
+        .transition()
+        .attr('fill', '#fff')
+        .each("end", function() {
+          d3.select(this)
+            .text('(Executing)')
+            .transition()
+            .attr('fill', '#000'); });
+    }
+
   //var margin = {top: 5, right: 60, bottom: 20, left: 220},
       //width = $(window).width()/2 - margin.left - margin.right,
       //height = 50 - margin.top - margin.bottom;
@@ -289,21 +306,3 @@ $(function() {
           d3.select(this).transition().attr('fill', '#999'); });
   });
 });
-
-
-function startExecutionAnimation(result) {
-  $("#performance").fadeIn();
-  result.status = "EXECUTING";
-  window.current_system = result;
-  setDuration.call(this.parentNode, 0);
-
-  d3.selectAll("text.subtitle")
-    .filter(function(d,si) { return i == si; })
-    .transition()
-    .attr('fill', '#fff')
-    .each("end", function() {
-      d3.select(this)
-        .text('(Executing)')
-        .transition()
-        .attr('fill', '#000'); });
-}

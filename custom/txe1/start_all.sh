@@ -43,7 +43,7 @@ done
 echo ------------------------------------------------------
 echo Starting demo screen webserver
 echo ------------------------------------------------------
-ssh $COORDINATOR "nohup python $BASEDIR/../../website/server_txe1.py --scidb-path $SCIDB_BASE &"
+ssh $COORDINATOR "nohup cd $BASEDIR/../../website && python server_txe1.py --scidb-path $SCIDB_BASE &"
 
 echo ------------------------------------------------------
 echo Ensuring Myria-Web webserver
@@ -75,7 +75,7 @@ ssh $COORDINATOR "export PYTHONPATH=$PYTHONPATH:$MYRIA_BASE/stack/myria-python &
 echo ------------------------------------------------------
 echo Required SSH tunnels:
 echo ------------------------------------------------------
-echo ssh txe1-login.mit.edu -L 8080:172.16.4.60:8080 -N -f
-echo ssh txe1-login.mit.edu -L 8751:$COORDINATOR:8751 -N -f
+API_ENDPOINT=172.16.4.60
+echo ssh txe1-login.mit.edu -L 8080:$API_ENDPOINT:8080 -L 8751:$COORDINATOR:8751 -N -f
 
 

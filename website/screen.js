@@ -254,7 +254,7 @@ $(function() {
 
                       //d3.selectAll("text.subtitle").filter(function(d,si) { return i == si; }).transition().attr('fill', '#fff').each("end", function() { d3.select(this).text('(Executing)').transition().attr('fill', '#000'); });
                       //pulse.call(this.parentNode);
-                      startExecutionAnimation(this, result);
+                      startExecutionAnimation.call(this, result);
 
                       $.ajax({
                             url: result.bigdawg_url,

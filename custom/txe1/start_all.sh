@@ -48,13 +48,21 @@ ssh $COORDINATOR "nohup python $BASEDIR/../../website/server_txe1.py --scidb-pat
 echo ------------------------------------------------------
 echo Ensuring Myria-Web webserver
 echo ------------------------------------------------------
-ssh $COORDINATOR "nohup $MYRIA_BASE/stack/google_appengine/dev_appserver.py --host node-038 --port 8090 --admin_port 8091 --datastore_path /state/partition1/myria_bhaynes/stack/myria-web/database --logs_path /state/partition1/myria_bhaynes/stack/myria-web/logs --skip_sdk_update_check true /state/partition1/myria_bhaynes/stack/myria-web/appengine &"
+ssh $COORDINATOR "nohup $MYRIA_BASE/stack/google_appengine/dev_appserver.py \
+                     --host node-038
+                     --port 8090
+                     --admin_port 8091
+                     --datastore_path /state/partition1/myria_bhaynes/stack/myria-web/database
+                     --logs_path /state/partition1/myria_bhaynes/stack/myria-web/logs
+                     --skip_sdk_update_check true /state/partition1/myria_bhaynes/stack/myria-web/appengine &"
 
 echo ------------------------------------------------------
 echo Ensuring Myria Relations
 echo ------------------------------------------------------
 echo SciDB:Demo:Vectors
-curl -trace -vi -H "Content-Type: application/x-www-form-urlencoded" -X POST -d 'query=singleton_symbols+%3D+%5B1+as+id%2C+0+as+index%2C+0.5+as+value%5D%3B+shuffled_symbols+%3D+%5Bfrom+singleton_symbols+emit+id%2C+index%2C+value%2C+count%28%2A%29%5D%3B+symbols+%3D+%5Bfrom+shuffled_symbols+emit+id%2C+index%2C+value%5D%3B+store%28symbols%2C+public%3Aadhoc%3Asymbols%29%3B&language=myrial' http://node-038:8090/execute
+curl -i -H "Content-Type: application/x-www-form-urlencoded" -X POST \
+     -d 'query=singleton_symbols+%3D+%5B1+as+id%2C+0+as+index%2C+0.5+as+value%5D%3B+shuffled_symbols+%3D+%5Bfrom+singleton_symbols+emit+id%2C+index%2C+value%2C+count%28%2A%29%5D%3B+symbols+%3D+%5Bfrom+shuffled_symbols+emit+id%2C+index%2C+value%5D%3B+store%28symbols%2C+public%3Aadhoc%3Asymbols%29%3B&language=myrial' \
+     http://node-038:8090/execute
 
 MYRIA_REST_PORT=${MYRIA_REST_PORT=8753}
 MYRIA_HTTP_PORT=${MYRIA_HTTP_PORT=8090}

@@ -74,7 +74,6 @@ function populateResults(ids) {
 	                 .data(data.tuples)
 	                   .enter()
 	                   .append("tr");
-	    console.log(data.tuples);
 		var cells = rows.selectAll("td")
 		        .data(function(row) {
 		            return data.schema.map(function(name, index) {
@@ -84,7 +83,7 @@ function populateResults(ids) {
 		        .enter()
 		        .append("td")
 		        .attr('class', function(d) { return d.name == 'status' ? (is_stable(d.id) ? 'success' : 'danger') : '' })
-	            .html(function(d) { console.log(d.value); return d.value.replace(" 00:00:00.0", ""); });
+	            .html(function(d) { return d.value.replace(" 00:00:00.0", ""); });
 
 	    $('#similar-patients').fadeIn();
 	});
@@ -121,9 +120,6 @@ $(function() {
 /******************************************************/
 
 function highlight_system(d) {
-  console.log("highlight_system");
-  console.log(!window.current_system);
-  console.log(d ? d.title : null);
   if(!window.current_system)
     switch(d ? d.title : null) {
       case "SciDB":

@@ -230,13 +230,14 @@ $(function() {
                    .on("mouseover", highlight_system)
                    .on("mouseout", function() { highlight_system() })
                    .on("click", function(result, i) {
-                   	  $("#performance").fadeIn();
-                      result.status = "EXECUTING";
-                      window.current_system = result;
-                      setDuration.call(this.parentNode, 0);
+                   	  //$("#performance").fadeIn();
+                      //result.status = "EXECUTING";
+                      //window.current_system = result;
+                      //setDuration.call(this.parentNode, 0);
 
-                      d3.selectAll("text.subtitle").filter(function(d,si) { return i == si; }).transition().attr('fill', '#fff').each("end", function() { d3.select(this).text('(Executing)').transition().attr('fill', '#000'); });
-                      pulse.call(this.parentNode);
+                      //d3.selectAll("text.subtitle").filter(function(d,si) { return i == si; }).transition().attr('fill', '#fff').each("end", function() { d3.select(this).text('(Executing)').transition().attr('fill', '#000'); });
+                      //pulse.call(this.parentNode);
+                      startExecutionAnimation(this, result);
 
                       $.ajax({
                             url: result.bigdawg_url,
@@ -262,7 +263,13 @@ $(function() {
 
 	                            populateResults(data.results);
 	                        }, result.offset * 1000);
-                         }).error(function(d) { console.log(d) });
+                          }).error(function(d) {
+                              console.log(d);
+
+                              // TODO: temporary
+
+
+                          });
                    });
 
     title.append("text")
@@ -282,3 +289,21 @@ $(function() {
           d3.select(this).transition().attr('fill', '#999'); });
   });
 });
+
+
+function startExecutionAnimation(result) {
+  $("#performance").fadeIn();
+  result.status = "EXECUTING";
+  window.current_system = result;
+  setDuration.call(this.parentNode, 0);
+
+  d3.selectAll("text.subtitle")
+    .filter(function(d,si) { return i == si; })
+    .transition()
+    .attr('fill', '#fff')
+    .each("end", function() {
+      d3.select(this)
+        .text('(Executing)')
+        .transition()
+        .attr('fill', '#000'); });
+}

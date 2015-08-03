@@ -58,9 +58,11 @@ curl -trace -vi -H "Content-Type: application/x-www-form-urlencoded" -X POST -d 
 
 MYRIA_REST_PORT=${MYRIA_REST_PORT=8753}
 MYRIA_HTTP_PORT=${MYRIA_HTTP_PORT=8090}
-ssh $COORDINATOR "cd $BASEDIR/myria && python create_vectors.py 600 256 --url http://$COORDINATOR:$MYRIA_REST_PORT \
-                                                                        --execution-url http://$COORDINATOR:$MYRIA_HTTP_PORT \
-                                                                        --relation-name vectors"
+ssh $COORDINATOR "PYTHONPATH=$PYTHONPATH:$BASEDIR/myria-python && \
+                  cd $BASEDIR/myria &&
+                  python create_vectors.py 600 256 --url http://$COORDINATOR:$MYRIA_REST_PORT \
+                                                   --execution-url http://$COORDINATOR:$MYRIA_HTTP_PORT \
+                                                   --relation-name vectors"
 
 echo ------------------------------------------------------
 echo Required SSH tunnels:

@@ -43,7 +43,7 @@ done
 echo ------------------------------------------------------
 echo Starting demo screen webserver
 echo ------------------------------------------------------
-ssh $COORDINATOR "cd $BASEDIR/../../website && (nohup python server_txe1.py --scidb-path $SCIDB_BASE) &"
+ssh $COORDINATOR "(cd $BASEDIR/../../website && nohup python server_txe1.py --scidb-path $SCIDB_BASE) &"
 
 echo ------------------------------------------------------
 echo Ensuring Myria-Web webserver

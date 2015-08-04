@@ -17,6 +17,7 @@ class DemoTCPServer(SocketServer.TCPServer):
 
 class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     PASSTHROUGH = ['/index.html', '/screen.html', '/myria.html', '/scidb.html', '/hybrid-csv.html', '/hybrid-binary.html',
+                   '/details/myria.html', '/details/scidb.html', '/details/hybrid-text.html', '/details/hybrid-binary.html',
                    '/js/index.js', '/js/workflow.js', '/js/bullet.js', '/js/cola.min.js', '/js/cola.js', '/js/screen.js', '/js/jquery-2.1.4.js', '/js/d3.min.js', '/js/bootstrap.min.js', '/js/cola.min.js'
                    '/cola.min.js.map',
                    '/css/bullet.css', '/css/screen.css', '/css/bootstrap.min.css', '/css/bootstrap-theme.min.css',

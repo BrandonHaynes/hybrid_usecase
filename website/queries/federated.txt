@@ -1,4 +1,6 @@
-const test_vector_id: 1;
+-- execute federated
+
+const test_vector_id: @test_id;
 const bins: 10;
 vectors = scan(SciDB:Demo:Vectors);
 -------------------------

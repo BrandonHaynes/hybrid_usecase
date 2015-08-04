@@ -8,12 +8,16 @@
 }
 
 #patient-container {
-	height: 200px;
+	height: 183px;
 	overflow-y: auto;
 }
 
 #similar-patients, #performance {
 	display: none;
+}
+
+#similar-patients h2, #performance h2 {
+	margin-top: 0;
 }
 
 .patient-selection ul li {

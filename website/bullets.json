@@ -1,6 +1,6 @@
 [
-  {"title":"SciDB","hideScale":true,"ranges":[17.5,17.5],"measures":[0,0],"markers":[20], "url": "execute.html?system=scidb", "bigdawg_url": "http://localhost:8080/bigdawg/query", "expression": "execution time: ([\\d\\.]+)", "offset": 21},
-  {"title":"Myria","hideScale":true,"ranges":[14,14],"measures":[0,0],"markers":[20], "url": "execute.html?system=myria", "bigdawg_url": "http://localhost:8080/bigdawg/query", "expression": "execution time: ([\\d\\.]+)", "offset": 13},
-  {"title":"Hybrid SciDB → Myria (CSV)","hideScale":true,"ranges":[8,8],"measures":[0,0],"markers":[20], "url": "execute.html?system=hybrid-csv", "bigdawg_url": "http://localhost:8080/bigdawg/query", "expression": "execution time: ([\\d\\.]+)", "offset": 8},
-  {"title":"Hybrid SciDB → Myria (Binary)","ranges":[7,7],"measures":[0,0],"markers":[20], "offset": 1}
+  {"title":"SciDB","hideScale":true,"ranges":[17.5,17.5],"measures":[0,0],"markers":[20], "url": "execute.html?system=scidb", "bigdawg_url": "http://localhost:8080/bigdawg/query", "expression": "execution time: ([\\d\\.]+)", "query": "scidb", "pulseClassName": "execute-scidb", "detail_url": "details/scidb.html", "offset": 21},
+  {"title":"Myria","hideScale":true,"ranges":[14,14],"measures":[0,0],"markers":[20], "url": "execute.html?system=myria", "bigdawg_url": "http://localhost:8080/bigdawg/query", "expression": "execution time: ([\\d\\.]+)", "query": "myria", "pulseClassName": "execute-myria", "detail_url": "details/myria.html", "offset": 13},
+  {"title":"SciDB → Myria (text)","hideScale":true,"ranges":[8,8],"measures":[0,0],"markers":[20], "url": "execute.html?system=hybrid-csv", "bigdawg_url": "http://localhost:8080/bigdawg/query", "expression": "execution time: ([\\d\\.]+)", "pulseClassName": "execute-hybridscidbmyriatext", "query": "federated", "detail_url": "details/hybrid-text.html", "offset": 8},
+  {"title":"SciDB → Myria (binary)","ranges":[7,7],"measures":[0,0],"markers":[20], "query": "federated", "pulseClassName": "execute-hybridscidbmyriabinary", "detail_url": "details/hybrid-binary.html", "offset": 6.5}
 ]

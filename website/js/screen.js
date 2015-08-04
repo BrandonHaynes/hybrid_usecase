@@ -10,28 +10,29 @@ function populateStrategy() {
 	$('#execute-myria')
 		.on('mouseover', highlight_myria)
 		.on('mouseout', function() { highlight_system() })
-		.on('click', function() { d3.select('.execute-myria')
+		.on('click', function() { d3.select('.execute-myria.benchmark')
 						   			.each(function(d, i) { d3.select(this)
 						   									 .on('click')
 						   									 .call(this, d, i); }); });
 	$('#execute-scidb')
 		.on('mouseover', highlight_scidb)
 		.on('mouseout', function() { highlight_system() })
-		.on('click', function() { d3.select('.execute-scidb')
+		.on('click', function() { d3.select('.execute-scidb.benchmark')
 						   			.each(function(d, i) { d3.select(this)
 						   									 .on('click')
 						   									 .call(this, d, i); }); });
 	$('#execute-hybrid-csv')
 		.on('mouseover', highlight_hybrid)
 		.on('mouseout', function() { highlight_system() })
-		.on('click', function() { d3.select('.execute-hybridscidbmyriacsv')
+		.on('click', function() { d3.select('.execute-scidbmyriatext.benchmark')
 						   			.each(function(d, i) { d3.select(this)
 						   									 .on('click')
 						   									 .call(this, d, i); }); });
+
 	$('#execute-hybrid-binary')
 		.on('mouseover', highlight_hybrid)
 		.on('mouseout', function() { highlight_system() })
-		.on('click', function() { d3.select('.execute-hybridscidbmyriabinary')
+		.on('click', function() { d3.select('.execute-scidbmyriabinary.benchmark')
 						   			.each(function(d, i) { d3.select(this)
 						   									 .on('click')
 						   									 .call(this, d, i); }); });
@@ -47,21 +48,28 @@ function populatePatients() {
 	                   .append("tr")
 			           .attr('class', function(_, index)
 			           		{ return index == 0 ? 'info' : ''; })
-			           .on('click', function(d) {
+			           .on('click', function() {
 			           		$('.info').attr('class', '');
 			           		d3.select(this).attr('class', 'info');
-			           })
+			           });
 
-		var cells = rows.selectAll("td")
-		        .data(function(row) {
+		rows.selectAll("td")
+		    .data(function(row) {
 		            return data.schema.map(function(name, index) {
 		                return {name: name, value: row[index]};
 		            });
 		        })
-		        .enter()
-		        .append("td")
-	            .html(function(d) { return d.value.replace(" 00:00:00.0", ""); });
+		    .enter()
+		    .append("td")
+	        .html(function(d) { return d.value.replace(" 00:00:00.0", ""); });
 	});
+
+
+//TODO remove
+$("#patients tbody tr").click(function() {
+			           		$('.info').attr('class', '');
+			           		d3.select(this).attr('class', 'info');
+			           });
 }
 
 function populateResults(ids) {
@@ -74,16 +82,16 @@ function populateResults(ids) {
 	                 .data(data.tuples)
 	                   .enter()
 	                   .append("tr");
-		var cells = rows.selectAll("td")
-		        .data(function(row) {
+		rows.selectAll("td")
+		    .data(function(row) {
 		            return data.schema.map(function(name, index) {
 		                	return {name: name, value: row[index]};
 			            }).concat({'name': 'waveform', 'value': ''}, {'id': +row[0], 'name': 'status', 'value': is_stable(row[0]) ? 'Stable' : 'Unstable'});
 			        })
-		        .enter()
-		        .append("td")
-		        .attr('class', function(d) { return d.name == 'status' ? (is_stable(d.id) ? 'success' : 'danger') : '' })
-	            .html(function(d) { return d.value.replace(" 00:00:00.0", ""); });
+		    .enter()
+		    .append("td")
+		    .attr('class', function(d) { return d.name == 'status' ? (is_stable(d.id) ? 'success' : 'danger') : '' })
+	        .html(function(d) { return d.value.replace(" 00:00:00.0", ""); });
 
 	    $('#similar-patients').fadeIn();
 	});
@@ -94,7 +102,7 @@ function is_stable(id) {
 }
 
 function execute(query, callback, error) {
-   url="http://localhost:8080/bigdawg/query"
+   var url = "http://localhost:8080/bigdawg/query";
 
    $.ajax({
       type: 'POST',
@@ -128,8 +136,8 @@ function highlight_system(d) {
       case "Myria":
         return highlight_myria();
 
-      case "Hybrid SciDB → Myria (CSV)":
-      case "Hybrid SciDB → Myria (Binary)":
+      case "Hybrid SciDB → Myria (text transfer)":
+      case "Hybrid SciDB → Myria (binary transfer)":
         return highlight_hybrid();
 
       case null:
@@ -183,16 +191,17 @@ $(function() {
      }).call(chart.duration(transition || 1000));
   }
 
-  function pulse() {
+  function pulse(className) {
     (function repeat() {
-            d3.select(this)
-              .filter(function(d) { return d.status; })
+            d3.selectAll('.' + className)
               .transition()
               .duration(750)
               .attr("fill", d3.rgb(239, 59, 44))
+              .style("color", d3.rgb(239, 59, 44))
               .transition()
               .duration(750)
               .attr('fill', d3.rgb(103, 0, 13))
+              .style('color', d3.rgb(103, 0, 13))
               .each("end", repeat);
           }).call(this);
   }
@@ -200,9 +209,9 @@ $(function() {
     function startExecutionAnimation(result, index) {
       $("#performance").fadeIn();
       result.status = "EXECUTING";
-      window.current_system = result;
+      window.current_system = window.last_system = result;
       setDuration.call(this.parentNode, 0);
-      pulse.call(this.parentNode);
+      pulse.call(this.parentNode, result.pulseClassName);
 
       d3.selectAll("text.subtitle")
         .filter(function(d,si) { return index == si; })
@@ -216,7 +225,7 @@ $(function() {
     }
 
     function endExecutionAnimation(data, result, index) {
-        context = this;
+        var context = this;
 
         setTimeout(function() {
             duration = result.offset * 0; // +data['elapsedNanos'] / 1E9
@@ -224,7 +233,7 @@ $(function() {
             window.current_system = undefined;
             result.status = undefined;
             highlight_none();
-            d3.select(context.parentNode).transition().attr('fill', '#000');
+            d3.selectAll('.' + result.pulseClassName).transition().attr('fill', '#000').style('color', '#000');
             d3.selectAll("text.subtitle")
               .filter(function(d,si) { return index == si; })
               .transition()
@@ -267,19 +276,15 @@ $(function() {
     var title = svg.append("g")
                    .style("text-anchor", "end")
                    .attr("transform", "translate(-6," + height / 2 + ")")
-                   .attr("class", function(d) { return 'execute-' + d.title.toLowerCase().replace(/[^\w]/g, ''); })
+                   .attr("class", function(d) { return 'benchmark execute-' + d.title.toLowerCase().replace(/[^\w]/g, ''); })
                    .style("cursor", "pointer")
                    .on("mouseover", highlight_system)
                    .on("mouseout", function() { highlight_system() })
                    .on("click", function(result, i) {
-                   	  //$("#performance").fadeIn();
-                      //result.status = "EXECUTING";
-                      //window.current_system = result;
-                      //setDuration.call(this.parentNode, 0);
-
-                      //d3.selectAll("text.subtitle").filter(function(d,si) { return i == si; }).transition().attr('fill', '#fff').each("end", function() { d3.select(this).text('(Executing)').transition().attr('fill', '#000'); });
-                      //pulse.call(this.parentNode);
                       startExecutionAnimation.call(this, result, i);
+                      var test_id = +$('tr.info td:first').text();
+                      var test_index = $('tr.info').parent().children().index($('tr.info'));
+                      var query = queries[result.query].replace('@test_id', test_index);
 
                       $.ajax({
                             url: result.bigdawg_url,
@@ -289,7 +294,7 @@ $(function() {
                             headers: {
                               'Accept': 'application/json',
                               'Content-Type': 'application/json' },
-                            data: JSON.stringify({'query': 'MYRIA(' + queries.federated + ')'}) })
+                            data: JSON.stringify({'query': 'MYRIA(' + query + ')'}) })
                           .done(function( data ) {
                             endExecutionAnimation.call(this, data, result, i);
                           }).error(function(d) {
@@ -297,7 +302,6 @@ $(function() {
                               var data = { results: [] };
                               // TODO: temporary
                               endExecutionAnimation.call(this, data, result, i);
-
                           });
                    });
 
@@ -310,11 +314,11 @@ $(function() {
         .attr("class", "subtitle")
         .attr("dy", "1.1em")
         .style("cursor", "pointer")
-        .text(function(d) { return "Click to Execute"; })
+        .text(function() { return "Click to Execute"; })
         .attr('fill', '#999')
-        .on('mouseover', function(d) {
+        .on('mouseover', function() {
           d3.select(this).transition().attr('fill', '#000'); })
-        .on('mouseout', function(d) {
+        .on('mouseout', function() {
           d3.select(this).transition().attr('fill', '#999'); });
   });
 });

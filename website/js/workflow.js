@@ -1,3 +1,10 @@
+function showWorkflowDetails(d) {
+    var url = window.last_system ? window.last_system.detail_url : undefined;
+    if(url)
+        alert(url);
+}
+
+
 $(window).load(function() {
     function createMarkers() {
       var defs = this.append('svg:defs')
@@ -30,7 +37,9 @@ $(window).load(function() {
         height = 190 - margin.top - margin.bottom;
         //width = $("#workflow-container").width() - margin.left - margin.right,
 
-    $("#workflow-container").width($(window).width());
+    $("#workflow-container")
+        .width($(window).width())
+        .on('click', showWorkflowDetails);
     d3.select(window).on('resize', function() { $("#workflow-container").width($(window).width()); });
 
     var color = d3.scale.category20();

@@ -1,7 +1,7 @@
 function showWorkflowDetails(d) {
     var url = window.last_system ? window.last_system.detail_url : undefined;
     if(url)
-        alert(url);
+        window.open(url);
 }
 
 

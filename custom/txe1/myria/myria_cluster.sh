@@ -90,9 +90,9 @@ echo "git clone $MYRIA_STACK_URL $MYRIA_STAGING && \
         git submodule update --init --recursive && \
         git --git-dir=$MYRIA_STAGING/myria/.git checkout $MYRIA_BRANCH && \
         git --git-dir=$MYRIA_STAGING/myria-web/.git checkout $MYRIA_WEB_BRANCH && \
-        git --git-dir=$MYRIA_STAGING/myria-web/submodules/raco/.git checkout $MYRIA_RACO_BRANCH && \
       cd $MYRIA_STAGING/myria-web && \
         git submodule update --init --recursive && \
+        git --git-dir=$MYRIA_STAGING/myria-web/submodules/raco/.git checkout $MYRIA_RACO_BRANCH && \
         $MYRIA_STAGING/myria/gradlew \
           --gradle-user-home=$MYRIA_STAGING/myria \
           --project-dir=$MYRIA_STAGING/myria jar" \

@@ -29,7 +29,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         if self.path in self.PASSTHROUGH:
             self.output(self.path.strip('/'))
         elif self.path.startswith('/iquery'):
-            self.execute('iquery', self.path)
+            self.execute('iquery', urlparse(self.path).query)
         else:
             self.send_response(404)
             self.end_headers()
@@ -40,7 +40,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             length = int(self.headers.getheader('content-length'))
             data = self.rfile.read(length)
             fields = parse_qs(data)
-            self.execute('iquery', fields['query'])
+            self.execute('iquery', fields['query'][0])
         else:
             self.send_response(404)
             self.end_headers()
@@ -55,7 +55,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             command = ("""{path}/bin/iquery -a -n -p {port} -q "{query}" """.format(
                 path=self.server.arguments.scidb_path,
                 port=self.server.arguments.scidb_port,
-                query=urllib.unquote(urlparse(data).query).replace('csv+', 'csvplus').replace('+', ' ').replace('csvplus', 'csv+').replace("\\'", "'")))
+                query=urllib.unquote(data).replace('csv+', 'csvplus').replace('+', ' ').replace('csvplus', 'csv+').replace("\\'", "'")))
         else:
             self.send_response(404)
             self.end_headers()

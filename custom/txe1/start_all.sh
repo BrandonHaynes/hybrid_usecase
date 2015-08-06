@@ -49,7 +49,7 @@ echo ------------------------------------------------------
 echo Ensuring Myria-Web webserver
 echo ------------------------------------------------------
 ssh $COORDINATOR "nohup $MYRIA_BASE/stack/google_appengine/dev_appserver.py \
-                     --host node-038 \
+                     --host $COORDINATOR \
                      --port 8090 \
                      --admin_port 8091 \
                      --datastore_path /state/partition1/myria_bhaynes/stack/myria-web/database \
@@ -61,8 +61,12 @@ echo Ensuring Myria Relations
 echo ------------------------------------------------------
 echo SciDB:Demo:Vectors
 curl -i -H "Content-Type: application/x-www-form-urlencoded" -X POST \
+     -d 'query=T1+%3D+empty%28id%3Aint%2Ctime%3Aint%2Cvalue%3Afloat%29%3Bstore%28T1%2C+SciDB%3ADemo%3AVectors%2C+%5Bid%5D%29%3B&language=myrial' \
+     http://$COORDINATOR:8090/execute
+echo public:adhoc:symbols
+curl -i -H "Content-Type: application/x-www-form-urlencoded" -X POST \
      -d 'query=singleton_symbols+%3D+%5B1+as+id%2C+0+as+index%2C+0.5+as+value%5D%3B+shuffled_symbols+%3D+%5Bfrom+singleton_symbols+emit+id%2C+index%2C+value%2C+count%28%2A%29%5D%3B+symbols+%3D+%5Bfrom+shuffled_symbols+emit+id%2C+index%2C+value%5D%3B+store%28symbols%2C+public%3Aadhoc%3Asymbols%29%3B&language=myrial' \
-     http://node-038:8090/execute
+     http://$COORDINATOR:8090/execute
 
 MYRIA_REST_PORT=${MYRIA_REST_PORT=8753}
 MYRIA_HTTP_PORT=${MYRIA_HTTP_PORT=8090}

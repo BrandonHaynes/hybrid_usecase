@@ -77,18 +77,20 @@ GOOGLE_APPENGINE_URL=${GOOGLE_APPENGINE_URL=url_not_specified}
 GATEWAY_NODE=${GATEWAY_NODE=login-1}
 MYRIA_STACK_URL=${MYRIA_STACK_URL=https://github.com/uwescience/myria-stack}
 MYRIA_STACK_BRANCH=${MYRIA_STACK_BRANCH=master}
+MYRIA_WEB_BRANCH=${MYRIA_STACK_BRANCH=master}
 MYRIA_STAGING=$MYRIA_BASE/stage`mktemp -d`
 
-echo "*** Clone & Compile Myria via $GATEWAY_NODE"
+echo "*** Clone, checkout ($MYRIA_STACK_BRANCH), and compile Myria via $GATEWAY_NODE"
+#        git submodule foreach --recursive git checkout master && \
+#        git submodule foreach --recursive git checkout master && \
 echo "git clone $MYRIA_STACK_URL $MYRIA_STAGING && \
       cd $MYRIA_STAGING && \
         git checkout $MYRIA_STACK_BRANCH && \
         git submodule update --init --recursive && \
-        git submodule foreach --recursive git checkout master && \
         git --git-dir=$MYRIA_STAGING/myria/.git checkout $MYRIA_BRANCH && \
+        git --git-dir=$MYRIA_STAGING/myria-web/.git checkout $MYRIA_WEB_BRANCH && \
       cd $MYRIA_STAGING/myria-web && \
         git submodule update --init --recursive && \
-        git submodule foreach --recursive git checkout master && \
         $MYRIA_STAGING/myria/gradlew \
           --gradle-user-home=$MYRIA_STAGING/myria \
           --project-dir=$MYRIA_STAGING/myria jar" \
@@ -144,7 +146,8 @@ nohup \
     --skip_sdk_update_check true \
    $MYRIA_STACK/myria-web/appengine \
      < /dev/null \
-     > $MYRIA_STACK/myria-web/stdout &
+     > $MYRIA_STACK/myria-web/stdout \
+     2> $MYRIA_STACK/myria-web/stderr &
 }
 
 

@@ -83,12 +83,14 @@ cd $SCIDB_BASE/bin && \
   ./scidb.py init_all -f \
       $SCIDB_NAME $SCIDB_BASE/etc/config.ini && \
   ./scidb.py start_all \
-      $SCIDB_NAME $SCIDB_BASE/etc/config.ini 
+      $SCIDB_NAME $SCIDB_BASE/etc/config.ini && \
+  ./iquery -ap $SCIDB_BASE_PORT -q "load_library('bin')"
 
 nohup $SCIDB_BASE/bin/shim \
   -f -p $SCIDB_SHIM_PORT -s $SCIDB_BASE_PORT \
     < /dev/null \
     > $SCIDB_BASE/data/shim.out &
+
 }
 
 start_catalog ()

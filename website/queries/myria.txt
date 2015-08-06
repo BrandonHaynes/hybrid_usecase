@@ -1,8 +1,8 @@
 -- exec myriax
 
-const test_vector_id: 1;
+const test_vector_id: @test_id;
 const bins: 10;
-vectors = scan(public:adhoc:relation600x256);
+vectors = scan(public:adhoc:vectors);
 
 const alpha: 1.0;
 
@@ -48,4 +48,38 @@ do
     iterations = [from iterations emit $0 + 1, $1];
 while [from iterations emit $0 < $1];
 
-sink(symbols);
+------------------------------------------------------------------------------------
+-- IDF
+------------------------------------------------------------------------------------
+ids = distinct([from symbols emit id]);
+N = [from ids emit count(*) as N];
+frequencies = [from symbols emit value, index, count(*) as frequency];
+tfv = [from symbols, frequencies, N
+       where symbols.value = frequencies.value
+       emit id, index, idf(value, frequency, N) as value];
+------------------------------------------------------------------------------------
+-- Conditioning
+------------------------------------------------------------------------------------
+moments = [from tfv emit id,
+                         avg(value) as mean,
+                         -- Sample estimator
+                         sqrt((stdev(value)*stdev(value)*count(value))/(count(value)-1)) as std];
+conditioned_tfv = [from tfv, moments
+                   where tfv.id = moments.id
+                   emit id, index, value as v, mean, std, (value - mean) / std as value];
+sum_squares = [from conditioned_tfv
+               emit id, sum(pow(value, 2)) as sum_squares];
+------------------------------------------------------------------------------------
+-- k-NN
+------------------------------------------------------------------------------------
+test_vector = [from conditioned_tfv where id = test_vector_id emit *];
+products = [from test_vector as x,
+                 conditioned_tfv as y
+                where x.index = y.index
+                emit y.id as id, sum(x.value * y.value) as product];
+correlations = [from products, sum_squares
+                where products.id = sum_squares.id
+                emit products.id as id, product / sum_squares as rho];
+
+store(correlations, correlations);
+

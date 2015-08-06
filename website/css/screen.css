@@ -1,3 +1,42 @@
+.details {
+	font-size: 50%;
+	position: relative;
+	top: -4px
+}
+
+.code-container {
+	height: 600px;
+	overflow: auto;
+	border: 1px solid #888;
+	border-right: 2px solid #888;
+}
+
+#hybridtext-details .code-container:first-child {
+	height: 200px;
+}
+#hybridtext-details .code-container {
+	height: 300px;
+}
+
+.code-container pre {
+	width: 1450px;
+	border: none;
+}
+
+#scidb-details img {
+	height: 600px;
+	width: 100%;
+	border: 1px solid #888;
+}
+
+.transfer-arrow {
+	height: 100px;
+}
+
+#patients th, #patients td, #results td, #results th {
+	text-align: center;
+}
+
 .bullet .title {
 	font-size: 11pt;
 	transform: translate(0, 5px);

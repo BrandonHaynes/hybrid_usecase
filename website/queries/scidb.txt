@@ -1,84 +1,120 @@
--- execute scidb
+-- exec scidb
 
-const test_vector_id: @test_id;
-const bins: 10;
-vectors = scan(SciDB:Demo:Vectors);
--------------------------
--- Constants + Functions
--------------------------
-const alpha: 1.0;
-def log2(x): log(x) / log(2);
-def mod2(x): x - int(x/2)*2;
-def iif(expression, true_value, false_value):
-    case when expression then true_value
-         else false_value end;
-def bucket(x, high, low): greater(least(int((bins-1) * (x - low) / iif(high != low, high - low, 1)),
-                                bins - 1), 0);
-def difference(current, previous, previous_time, time):
-    iif(previous_time >= 0,
-        (current - previous) * iif(previous_time < time, 1, -1),
-        current);
-symbols = empty(id:int, index:int, value:int);
-------------------------------------------------------------------------------------
--- Harr Transform
-------------------------------------------------------------------------------------
-uda HarrTransformGroupBy(alpha, time, x) {
-  [0.0 as coefficient, 0.0 as _sum, 0 as _count, -1 as _time];
-  [difference(x, coefficient, _time, time), _sum + x, _count + 1, time];
-  [coefficient, _sum / int(_count * alpha)];
-};
-iterations = [from vectors where id = test_vector_id emit 0 as i, int(ceil(log2(count(*)))) as total];
-do
-    groups = [from vectors emit
-                     id,
-                     int(floor(time/2)) as time,
-                     HarrTransformGroupBy(alpha, time, value) as [coefficient, mean]];
-    coefficients = [from groups emit id, coefficient];
-    range = [from vectors emit max(value) - min(value) as high, min(value) - max(value) as low];
-    histogram = [from coefficients, range
-                 emit id,
-                      bucket(coefficient, high, low) as index,
-                      count(bucket(coefficient, high, low)) as value];
-    symbols = symbols + [from histogram, iterations emit id, index + i*bins as index, value];
-    vectors = [from groups emit id, time, mean as value];
-    iterations = [from iterations emit $0 + 1, $1];
-while [from iterations emit $0 < $1];
-sink(symbols);
---========================================================================
--- Myria
---========================================================================
-const test_vector_id1: 1;
-def idf1(w_ij, w_ijN, N): log(N / w_ijN) * w_ij;
-------------------------------------------------------------------------------------
--- IDF
-------------------------------------------------------------------------------------
-ids = distinct([from symbols emit id]);
-N = [from ids emit count(*) as N];
-frequencies = [from symbols emit value, index, count(*) as frequency];
-tfv = [from symbols, frequencies, N
-       where symbols.value = frequencies.value
-       emit id, index, idf(value, frequency, N) as value];
-------------------------------------------------------------------------------------
--- Conditioning
-------------------------------------------------------------------------------------
-moments = [from tfv emit id,
-                         avg(value) as mean,
-                         -- Sample estimator
-                         sqrt((stdev(value)*stdev(value)*count(value))/(count(value)-1)) as std];
-conditioned_tfv = [from tfv, moments
-                   where tfv.id = moments.id
-                   emit id, index, value as v, mean, std, (value - mean) / std as value];
-sum_squares = [from conditioned_tfv
-               emit id, sum(pow(value, 2)) as sum_squares];
-------------------------------------------------------------------------------------
--- k-NN
-------------------------------------------------------------------------------------
-test_vector = [from conditioned_tfv where id = test_vector_id1 emit *];
-products = [from test_vector as x,
-                 conditioned_tfv as y
-                where x.index = y.index
-                emit y.id as id, sum(x.value * y.value) as product];
-correlations = [from products, sum_squares
-                where products.id = sum_squares.id
-                emit products.id as id, product / sum_squares as rho];
-store(correlations, correlations);
+create temp array transform_1<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+create temp array transform_2<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+create temp array transform_3<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+create temp array transform_4<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+create temp array transform_5<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+create temp array transform_6<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+create temp array transform_7<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+create temp array transform_8<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
+
+store(regrid(scan(input), 1, 2, avg(value) as value, bin1(value) as bucket), transform_1);
+store(regrid(scan(transform_1), 1, 2, avg(value) as value, bin2(value) as bucket), transform_2);
+store(regrid(scan(transform_2), 1, 2, avg(value) as value, bin4(value) as bucket), transform_3);
+store(regrid(scan(transform_3), 1, 2, avg(value) as value, bin8(value) as bucket), transform_4);
+store(regrid(scan(transform_4), 1, 2, avg(value) as value, bin16(value) as bucket), transform_5);
+store(regrid(scan(transform_5), 1, 2, avg(value) as value, bin32(value) as bucket), transform_6);
+store(regrid(scan(transform_6), 1, 2, avg(value) as value, bin64(value) as bucket), transform_7);
+store(regrid(scan(transform_7), 1, 2, avg(value) as value, bin128(value) as bucket), transform_8);
+
+store(attribute_rename(
+ project(
+   apply(concat(concat(concat(concat(concat(concat(concat(
+     redimension(transform_1, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value),
+     redimension(transform_2, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value)),
+     redimension(transform_3, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value)),
+     redimension(transform_4, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value)),
+     redimension(transform_5, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value)),
+     redimension(transform_6, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value)),
+     redimension(transform_7, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value)),
+     redimension(transform_8, <value:uint64 null>[id=0:599,1,0, bucket=0:9,4294967296,0], true, count(bucket) as value)),
+     signed_value, int64(value)),
+   signed_value),
+signed_value, value), symbols);
+
+store(uniq(sort(project(symbols, value))), unique_values);
+store(project(index_lookup(symbols, unique_values, symbols.value, value_index), value, value_index), value_indices);
+store(project(unpack(aggregate(redimension(value_indices, <value:int64 null>[id,time,value_index]), count(*) as frequency, max(value) as value, value_index), index), value, frequency), frequencies);
+
+store(redimension(apply(cross_join(redimension(value_indices, <value:int64 NULL DEFAULT null> [id,bucket,value_index]) as left,
+attribute_rename(
+redimension(
+    project(
+        index_lookup(
+            frequencies,
+            unique_values,
+            frequencies.value,
+            value_index),
+        value,
+        frequency,
+        value_index),
+    <value:int64 NULL, frequency:uint64 NULL> [index, value_index]),
+value,
+value_f) as right,
+left.value_index,
+right.value_index),
+idf,
+log(600.0 / frequency) * value),
+<idf:double null>[id, bucket]),
+tfv);
+
+store(
+attribute_rename(
+project(
+    apply(
+        cross_join(
+            tfv as _tfv,
+            aggregate(
+                tfv,
+                avg(idf) as mean,
+                stdev(idf) as std,
+                id) as moments,
+            _tfv.id,
+            moments.id),
+        normalized_value,
+        (idf - mean) / std),
+    normalized_value),
+normalized_value,
+value),
+conditioned_tfv);
+
+consume(
+project(
+apply(
+    aggregate(
+        apply(
+            cross_join(
+                attribute_rename(
+                    cross_join(
+                        conditioned_tfv as ctfv,
+                        aggregate(
+                            apply(
+                                conditioned_tfv,
+                                vv,
+                                pow(value, 2)),
+                            sum(vv) as ss,
+                            id) as sum_squares,
+                        ctfv.id,
+                        sum_squares.id),
+                    value,
+                    value) as ctfv_ss,
+                attribute_rename(
+                    redimension(
+                        slice(
+                            conditioned_tfv,
+                            id,
+                            1),
+                        <value: double null>[bucket]),
+                    value,
+                    value_test) as test_vector,
+                ctfv_ss.bucket,
+                test_vector.bucket),
+            product,
+            value * value_test),
+        sum(product) as sum,
+        min(ss) as ss,
+        id),
+    rho,
+    sum / ss),
+rho));

@@ -1,7 +1,6 @@
 function showWorkflowDetails(d) {
-    var url = window.last_system ? window.last_system.detail_url : undefined;
-    if(url)
-        window.open(url);
+    if(window.last_system && window.last_system.detail_id)
+        $('#' + window.last_system.detail_id).modal();
 }
 
 

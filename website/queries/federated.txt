@@ -1,4 +1,4 @@
--- execute federated
+-- exec federated
 
 const test_vector_id: @test_id;
 const bins: 10;
@@ -48,7 +48,7 @@ sink(symbols);
 -- Myria
 --========================================================================
 const test_vector_id1: 1;
-def idf1(w_ij, w_ijN, N): log(N / w_ijN) * w_ij;
+def idf(w_ij, w_ijN, N): log(N / w_ijN) * w_ij;
 ------------------------------------------------------------------------------------
 -- IDF
 ------------------------------------------------------------------------------------

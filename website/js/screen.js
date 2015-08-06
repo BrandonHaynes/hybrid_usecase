@@ -80,30 +80,10 @@ function populateResults(ids) {
 
 	// Yay!  SQL injection!
 	execute("RELATION(select subject_id, dob, sex from mimic2v26.d_patients where subject_id in (" + ids.join(',') + ") order by subject_id limit 5)", function(data) {
-	    var rows = d3.select("#results tbody")
-	                 .selectAll("tr")
-	                 .data(data.tuples)
-	                   .enter()
-	                   .append("tr");
-		rows.selectAll("td")
-		    .data(function(row) {
-		            return data.schema.map(function(name, index) {
-		                	return {name: name, value: row[index]};
-			            }).concat({'name': 'rho', 'value': '.999'}, {'name': 'waveform', 'value': ''}, {'id': +row[0], 'name': 'status', 'value': is_stable(row[0]) ? 'Stable' : 'Unstable'});
-			        })
-		    .enter()
-		    .append("td")
-		    .attr('class', function(d) { return d.name == 'status' ? (is_stable(d.id) ? 'success' : 'danger') : '' })
-	        .html(function(d) { return d.value.replace(" 00:00:00.0", ""); });
-
-	    $('#similar-patients').fadeIn();
-
-        populatePrediction(rows[0]);
-	}, function(data) {
         //TODO remove failsafe?
         var lookup = function(id) {
             row = $('td', $('#patients tbody tr')[ids.indexOf(id)]);
-            return [row[0].innerText, row[1].innerText, row[2].innerText]; };
+            return [row[0].innerText, row[1].innerText, row[2].innerText, row[3].innerText]; };
         data.schema = ['subject_id', 'dob', 'sex'];
         data.tuples = [lookup(test_id)];
         data.tuples.push(lookup(ids[+data.tuples[0][0] % ids.length]));
@@ -113,21 +93,55 @@ function populateResults(ids) {
         data.tuples.push(lookup(ids[+data.tuples[4][0] % ids.length]));
 
 	    var rows = d3.select("#results tbody")
-	                 .selectAll("tr")
-	                 .data(data.tuples)
-	                   .enter()
-	                   .append("tr");
+                     .selectAll("tr")
+	                 .data(data.tuples, function(d) { return d; });
+        rows.enter().append("tr");
+        rows.exit().remove();
 		rows.selectAll("td")
 		    .data(function(row, i) {
 		            return data.schema.map(function(name, index) {
+                console.log(row);
 		                	return {name: name, value: row[index]};
-			            }).concat({'name': 'rho', 'value': map_rho(test_id, row[0], i)}, {'name': 'waveform', 'value': ''}, {'id': +row[0], 'name': 'status', 'value': is_stable(row[0]) ? 'Stable' : 'Unstable'});
+			            }).concat({'name': 'rho', 'value': map_rho(test_id, row[0], i)}, {'name': 'waveform', 'value': row[3]}, {'id': +row[0], 'name': 'status', 'value': is_stable(row[0]) ? 'Stable' : 'Unstable'});
 			        })
 		    .enter()
 		    .append("td")
 		    .attr('class', function(d) { return d.name == 'status' ? (is_stable(d.id) ? 'success' : 'danger') : '' })
 	        .html(function(d) {
-                return d.value.replace(" 00:00:00.0", ""); });
+                return d.name != 'waveform' ? d.value.replace(" 00:00:00.0", "") : populateWaveform.call(this, d); });
+
+	    $('#similar-patients').fadeIn();
+
+        populatePrediction(rows[0]);
+	}, function(data) {
+        //TODO remove failsafe?
+        var lookup = function(id) {
+            row = $('td', $('#patients tbody tr')[ids.indexOf(id)]);
+            return [row[0].innerText, row[1].innerText, row[2].innerText, row[3].innerText]; };
+        data.schema = ['subject_id', 'dob', 'sex'];
+        data.tuples = [lookup(test_id)];
+        data.tuples.push(lookup(ids[+data.tuples[0][0] % ids.length]));
+        data.tuples.push(lookup(ids[+data.tuples[1][0] % ids.length]));
+        data.tuples.push(lookup(ids[+data.tuples[2][0] % ids.length]));
+        data.tuples.push(lookup(ids[+data.tuples[3][0] % ids.length]));
+        data.tuples.push(lookup(ids[+data.tuples[4][0] % ids.length]));
+
+	    var rows = d3.select("#results tbody")
+                     .selectAll("tr")
+	                 .data(data.tuples, function(d) { return d; });
+        rows.enter().append("tr");
+        rows.exit().remove();
+		rows.selectAll("td")
+		    .data(function(row, i) {
+		            return data.schema.map(function(name, index) {
+		                	return {name: name, value: row[index]};
+			            }).concat({'name': 'rho', 'value': map_rho(test_id, row[0], i)}, {'name': 'waveform', 'value': row[3]}, {'id': +row[0], 'name': 'status', 'value': is_stable(row[0]) ? 'Stable' : 'Unstable'});
+			        })
+		    .enter()
+		    .append("td")
+		    .attr('class', function(d) { return d.name == 'status' ? (is_stable(d.id) ? 'success' : 'danger') : '' })
+	        .html(function(d) {
+                return d.name != 'waveform' ? d.value.replace(" 00:00:00.0", "") : populateWaveform.call(this, d); });
 
 	    $('#similar-patients').fadeIn();
 
@@ -145,11 +159,58 @@ function populatePrediction(rows) {
 
     console.log('Stable votes: ' + String(stableVotes));
     rows[0].childNodes[lastIndex].innerText = stableVotes >= 3 ? "Stable (Predicted)" : "Unstable (Predicted)";
-    rows[0].childNodes[lastIndex].className = stableVotes >= 3 ? "success" : "danger";
+    rows[0].childNodes[lastIndex].className = rows[0].className = stableVotes >= 3 ? "success" : "danger";
+    rows[0].style.fontWeight = 'bold';
+}
+
+function populateWaveform(data) {
+    data.context = this;
+    d3.select(this).attr('class', 'subject-' + data.value);
+	execute("ARRAY(subarray(regrid(filter(slice(waveform_signal_table, RecordName, " + data.value + "1), signal != 0 and signal != nan), 256, avg(signal) as signal), 0, 255))", function(data) {
+        console.log(data);
+        var values = data.tuples.map(function(tuple) { return +tuple[1] || 0; });
+        while(values.length < 256)
+            values.push(0.0);
+        plotWaveform.call(data.context, values);
+    }, function(d) {
+        console.log(d);
+        var values = [];
+        while(values.length < 256)
+            values.push(Math.random() - 0.5);
+        plotWaveform.call(data.context, values);
+    });
+}
+
+function plotWaveform(data) {
+    var width = 128, height = 20;
+
+    var x = d3.scale.linear()
+        .domain([0, 256])
+        .range([0, width]);
+
+    var y = d3.scale.linear()
+        .domain([-1, 1])
+        .range([height, 0]);
+
+    var line = d3.svg.line()
+        .x(function(d,i) { return x(i); })
+        .y(function(d) { return y(d); });
+
+    console.log(data.context);
+    var svg = d3.select(this)
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .append("g");
+
+    svg.append("path")
+      .datum(data)
+      .attr("class", "line")
+      .attr("d", line);
 }
 
 function map_rho(test_id, related_id, index) {
-    return String(Math.max(0.0, 1.0 - (+related_id == +test_id ? 0 : index / 10 + 0.1778 + 0.117371 + test_id / 10000 + related_id / 1000000)));
+    return Math.max(0.0, (+related_id == +test_id ? 1 : 0.1) * (1.0 - (+related_id == +test_id ? 0 : index / 10 + 0.1778 + 0.117371 + test_id / 10000 + related_id / 1000000))).toFixed(3);
 }
 
 function is_stable(id) {

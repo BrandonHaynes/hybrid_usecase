@@ -3,7 +3,7 @@ import sys
 import subprocess
 import argparse
 import logging
-from urlparse import urlparse
+from urlparse import urlparse, parse_qs
 import urllib
 import SimpleHTTPServer
 import SocketServer
@@ -36,10 +36,10 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
 
     def do_POST(self):
-        if self.path.startswith('/iquery'):
+        if '/iquery' in self.path:
             length = int(self.headers.getheader('content-length'))
             data = self.rfile.read(length)
-            fields = urlparse.parse_qs(data)
+            fields = parse_qs(data)
             self.execute('iquery', fields['query'])
         else:
             self.send_response(404)

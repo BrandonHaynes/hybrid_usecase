@@ -55,7 +55,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             command = ("""{path}/bin/iquery -a -n -p {port} -q "{query}" """.format(
                 path=self.server.arguments.scidb_path,
                 port=self.server.arguments.scidb_port,
-                query=urllib.unquote(data).replace('csv+', 'csvplus').replace('+', ' ').replace('csvplus', 'csv+').replace("\\'", "'")))
+                query=urllib.unquote(data).replace('csv+', 'csvplus').replace('+', ' ').replace('csvplus', 'csv+').replace("\\'", "'").replace('\n', ' ')))
         else:
             self.send_response(404)
             self.end_headers()

@@ -47,24 +47,27 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
 
     def execute(self, system, data):
-        prefix = ['ssh', self.server.arguments.scidb_node]
+        #prefix = ['ssh', self.server.arguments.scidb_node]
 
         if system == 'iquery':
             self.send_response(200)
             self.end_headers()
-            command = ("""{path}/bin/iquery -a -n -p {port} -q "{query}" """.format(
-                path=self.server.arguments.scidb_path,
-                port=self.server.arguments.scidb_port,
-                query=urllib.unquote(data).replace('csv+', 'csvplus').replace('+', ' ').replace('csvplus', 'csv+').replace("\\'", "'").replace('\n', ' ').replace('"', '\\"')))
+            command = ['{path}/bin/iquery'.format(path=self.server.arguments.scidb_path),
+                       '-anp', self.server.arguments.scidb_port,
+                       '-q', (urllib.unquote(data)
+                                    .replace('csv+', 'csvplus')
+                                    .replace('+', ' ')
+                                    .replace('csvplus', 'csv+')
+                                    .replace("\\'", "'")
+                                    .replace('\n', ' ')
+                                    .replace('"', '\\"'))]
+            self.wfile.write(subprocess.check_output(command,
+                             stderr=subprocess.STDOUT))
         else:
             self.send_response(404)
             self.end_headers()
             self.wfile.write('System not found.')
             command = None
-
-        if command:
-            self.wfile.write(subprocess.check_output(prefix + [command],
-                             stderr=subprocess.STDOUT))
 
 
     def output(self, filename):

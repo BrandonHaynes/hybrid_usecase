@@ -53,7 +53,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
             command = ['{path}/bin/iquery'.format(path=self.server.arguments.scidb_path),
-                       '-anp', self.server.arguments.scidb_port,
+                       '-anp', str(self.server.arguments.scidb_port),
                        '-q', (urllib.unquote(data)
                                     .replace('csv+', 'csvplus')
                                     .replace('+', ' ')

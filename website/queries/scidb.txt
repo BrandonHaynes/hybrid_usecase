@@ -9,7 +9,7 @@ create temp array transform_6<value: double null, bucket:int64 null>[id=0:599,1,
 create temp array transform_7<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
 create temp array transform_8<value: double null, bucket:int64 null>[id=0:599,1,0, time=0:255,256,0];
 
-store(regrid(scan(input), 1, 2, avg(value) as value, bin1(value) as bucket), transform_1);
+store(regrid(scan(SciDB__Demo__Vectors), 1, 2, avg(value) as value, bin1(value) as bucket), transform_1);
 store(regrid(scan(transform_1), 1, 2, avg(value) as value, bin2(value) as bucket), transform_2);
 store(regrid(scan(transform_2), 1, 2, avg(value) as value, bin4(value) as bucket), transform_3);
 store(regrid(scan(transform_3), 1, 2, avg(value) as value, bin8(value) as bucket), transform_4);
@@ -118,3 +118,12 @@ apply(
     rho,
     sum / ss),
 rho));
+
+remove(transform_1);
+remove(transform_2);
+remove(transform_3);
+remove(transform_4);
+remove(transform_5);
+remove(transform_6);
+remove(transform_7);
+remove(transform_8);

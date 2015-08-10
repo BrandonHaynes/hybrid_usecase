@@ -74,6 +74,7 @@ ssh $COORDINATOR "export PYTHONPATH=$PYTHONPATH:$MYRIA_BASE/stack/myria-python &
                   cd $BASEDIR/myria &&
                   python create_vectors.py 600 256 --url http://$COORDINATOR:$MYRIA_REST_PORT \
                                                    --execution-url http://$COORDINATOR:$MYRIA_HTTP_PORT \
+                                                   --input-mode random \
                                                    --relation-name vectors"
 
 echo ------------------------------------------------------

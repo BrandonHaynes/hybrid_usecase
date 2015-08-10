@@ -2,11 +2,13 @@
 import sys
 import subprocess
 import argparse
+import json
 import logging
 from urlparse import urlparse, parse_qs
 import urllib
 import SimpleHTTPServer
 import SocketServer
+from myria import MyriaConnection, MyriaRelation
 
 class DemoTCPServer(SocketServer.TCPServer):
     def __init__(self, address, handler, arguments):
@@ -21,7 +23,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                    '/js/index.js', '/js/workflow.js', '/js/bullet.js', '/js/cola.min.js', '/js/cola.js', '/js/screen.js', '/js/jquery-2.1.4.js', '/js/d3.min.js', '/js/bootstrap.min.js', '/js/cola.min.js', '/js/run_prettify.js',
                    '/cola.min.js.map',
                    '/css/bullet.css', '/css/screen.css', '/css/bootstrap.min.css', '/css/bootstrap-theme.min.css',
-                   '/bullets.json', '/graph.json',
+                   '/bullets.json', '/graph.json', '/queries/mapping.json',
                    '/queries/federated.txt', '/queries/myria.txt', '/queries/scidb.txt',
                    '/favicon.ico']
 
@@ -30,6 +32,8 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             self.output(self.path.strip('/'))
         elif self.path.startswith('/iquery'):
             self.execute('iquery', urlparse(self.path).query)
+        elif self.path.startswith('/dataset'):
+            self.execute('myria', urlparse(self.path).query)
         else:
             self.send_response(404)
             self.end_headers()
@@ -63,6 +67,13 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                                     .replace('"', '\\"'))]
             self.wfile.write(subprocess.check_output(command,
                              stderr=subprocess.STDOUT))
+        elif system == 'myria':
+            self.send_response(200)
+            self.end_headers()
+            connection = MyriaConnection(rest_url=self.server.arguments.myria_url)
+            relation = MyriaRelation(data, connection=connection)
+            self.wfile.write(json.dumps(relation.to_dict()))
+
         else:
             self.send_response(404)
             self.end_headers()
@@ -92,6 +103,8 @@ def parse_arguments(arguments):
     parser.add_argument('--scidb-node', type=str, dest='scidb_node', default='localhost', help='Name of node with iquery')
     parser.add_argument('--scidb-port', type=int, dest='scidb_port', default=1260, help='SciDB coordinator port')
     parser.add_argument('--scidb-path', type=str, dest='scidb_path', help='Root path of SciDB installation')
+
+    parser.add_argument('--myria-url', type=str, dest='myria_url', default='http://localhost:8753', help='Myria REST URL')
 
     parser.add_argument('--port', type=int, default=8751, help='Webserver port number')
 

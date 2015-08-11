@@ -60,6 +60,8 @@ echo ------------------------------------------------------
 echo Ensuring Myria Relations
 echo ------------------------------------------------------
 echo SciDB:Demo:Vectors
+#curl -i -H "Content-Type: application/x-www-form-urlencoded" -X POST -d 'query=T1+%3D+empty%28id%3Aint%2Ctime%3Aint%2Cvalue%3Afloat%29%3Bstore%28T1%2C+SciDB%3ADemo%3AVectors%2C+%5Bid%5D%29%3B&language=myrial' \
+#http://node-037:8090/execute
 curl -i -H "Content-Type: application/x-www-form-urlencoded" -X POST \
      -d 'query=T1+%3D+empty%28id%3Aint%2Ctime%3Aint%2Cvalue%3Afloat%29%3Bstore%28T1%2C+SciDB%3ADemo%3AVectors%2C+%5Bid%5D%29%3B&language=myrial' \
      http://$COORDINATOR:8090/execute

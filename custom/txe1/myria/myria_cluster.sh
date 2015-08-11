@@ -103,7 +103,9 @@ echo "wget  -q  $GOOGLE_APPENGINE_URL -O $MYRIA_STAGING/gae.zip && \
       rm $MYRIA_STAGING/gae.zip" \
   | ssh $GATEWAY_NODE 'bash -es'
 
+cp ~/parsetab.py $MYRIA_STAGING/stack/myria-web/submodules/raco
 rsync -al $GATEWAY_NODE:$MYRIA_STAGING/. $MYRIA_STACK
+
 
 export PATH=/usr/java/jdk1.7.0_51/bin:$PATH
 export PYTHONPATH=$MYRIA_STACK/myria-python:$PYTHONPATH

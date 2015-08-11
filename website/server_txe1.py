@@ -147,7 +147,7 @@ def parse_arguments(arguments):
     parser.add_argument('--scidb-path', type=str, dest='scidb_path', default='/state/partition1/scidb-bhaynes' help='Root path of SciDB installation')
 
     parser.add_argument('--myria-url', type=str, dest='myria_url', default='http://localhost:8753', help='Myria REST URL')
-    parser.add_argument('--myria-path', type=str, dest='myria_path', default='/state/partition1/myria_bhaynes' help='Myria REST URL')
+    parser.add_argument('--myria-path', type=str, dest='myria_path', default='/state/partition1/myria_bhaynes', help='Myria REST URL')
 
     parser.add_argument('--port', type=int, default=8751, help='Webserver port number')
 

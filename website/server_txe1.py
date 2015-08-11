@@ -45,6 +45,8 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             data = self.rfile.read(length)
             fields = parse_qs(data)
             self.execute('iquery', fields['query'][0])
+        elif '/prepare' in self.path:
+            self.execute('restart', None)
         else:
             self.send_response(404)
             self.end_headers()
@@ -65,13 +67,18 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             self.send_header('Access-Control-Allow-Methods', 'GET')
             self.send_header('Access-Control-Allow-Headers', 'Content-Type')
             self.end_headers()
+        elif self.path.startswith('/prepare'):
+            self.send_response(200)
+            self.send_header('Allow', 'POST,OPTIONS')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', 'POST')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+            self.end_headers()
         else:
             self.send_response(404)
             self.end_headers()
 
     def execute(self, system, data):
-        #prefix = ['ssh', self.server.arguments.scidb_node]
-
         if system == 'iquery':
             self.send_response(200)
             self.end_headers()
@@ -94,11 +101,26 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             relation = MyriaRelation(data, connection=connection)
             self.wfile.write(json.dumps(relation.to_dict()))
 
+        elif system == 'restart':
+            self.wfile.write(subprocess.check_output([
+                '{path}/stack/myria/myriadeploy/kill_all_java_processes.py {path}/deploy/deployment.config &&' \
+                '{path}/stack/myria/myriadeploy/launch_cluster.sh {path}/deploy/deployment.config'.format(
+                    path=self.server.arguments.myria_path)],
+                stderr=subprocess.STDOUT))
+            self.wfile.write(subprocess.check_output([
+                '{path}/bin/scidb.py stop_all bhaynes {path}/etc/config.ini &&' \
+                '{path}/bin/scidb.py start_all bhaynes {path}/etc/config.ini'.format(
+                    path=self.server.arguments.scidb_path)],
+                stderr=subprocess.STDOUT))
+
+            self.send_response(200)
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+
         else:
             self.send_response(404)
             self.end_headers()
             self.wfile.write('System not found.')
-            command = None
 
 
     def output(self, filename):
@@ -122,9 +144,10 @@ def parse_arguments(arguments):
 
     parser.add_argument('--scidb-node', type=str, dest='scidb_node', default='localhost', help='Name of node with iquery')
     parser.add_argument('--scidb-port', type=int, dest='scidb_port', default=1260, help='SciDB coordinator port')
-    parser.add_argument('--scidb-path', type=str, dest='scidb_path', help='Root path of SciDB installation')
+    parser.add_argument('--scidb-path', type=str, dest='scidb_path', default='/state/partition1/scidb-bhaynes' help='Root path of SciDB installation')
 
     parser.add_argument('--myria-url', type=str, dest='myria_url', default='http://localhost:8753', help='Myria REST URL')
+    parser.add_argument('--myria-path', type=str, dest='myria_path', default='/state/partition1/myria_bhaynes' help='Myria REST URL')
 
     parser.add_argument('--port', type=int, default=8751, help='Webserver port number')
 

@@ -50,6 +50,25 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             self.end_headers()
 
 
+    def do_OPTIONS(self):
+        if self.path.startswith('/iquery'):
+            self.send_response(200)
+            self.send_header('Allow', 'GET,POST,OPTIONS')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', 'GET,POST')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+            self.end_headers()
+        elif self.path.startswith('/dataset'):
+            self.send_response(200)
+            self.send_header('Allow', 'GET,OPTIONS')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Methods', 'GET')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+            self.end_headers()
+        else:
+            self.send_response(404)
+            self.end_headers()
+
     def execute(self, system, data):
         #prefix = ['ssh', self.server.arguments.scidb_node]
 
@@ -69,6 +88,7 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                              stderr=subprocess.STDOUT))
         elif system == 'myria':
             self.send_response(200)
+            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             connection = MyriaConnection(rest_url=self.server.arguments.myria_url)
             relation = MyriaRelation(data, connection=connection)

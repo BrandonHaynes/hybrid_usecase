@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import sys
 import subprocess
 import argparse
@@ -102,15 +103,30 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps(relation.to_dict()))
 
         elif system == 'restart':
+            myria_path = self.server.arguments.myria_path
             self.wfile.write(subprocess.check_output([
-                '{path}/stack/myria/myriadeploy/kill_all_java_processes.py {path}/deploy/deployment.config &&' \
-                '{path}/stack/myria/myriadeploy/launch_cluster.sh {path}/deploy/deployment.config'.format(
-                    path=self.server.arguments.myria_path)],
+                './kill_all_java_processes.py', os.path.join(myria_path, 'deploy/deployment.config')],
+                cwd=os.path.join(myria_path, 'stack/myria/myriadeploy'),
                 stderr=subprocess.STDOUT))
             self.wfile.write(subprocess.check_output([
-                '{path}/bin/scidb.py stop_all bhaynes {path}/etc/config.ini &&' \
-                '{path}/bin/scidb.py start_all bhaynes {path}/etc/config.ini'.format(
-                    path=self.server.arguments.scidb_path)],
+                './launch_cluster.sh', os.path.join(myria_path, 'deploy/deployment.config')],
+                cwd=os.path.join(myria_path, 'stack/myria/myriadeploy'),
+                stderr=subprocess.STDOUT))
+
+
+            scidb_path = self.server.arguments.scidb_path
+            self.wfile.write(subprocess.check_output([
+                'bin/scidb.py', 'stop_all', 'bhaynes', '{}/etc/config.ini'.format(scidb_path)],
+                cwd=scidb_path,
+                stderr=subprocess.STDOUT))
+            self.wfile.write(subprocess.check_output([
+                'bin/scidb.py', 'start_all', 'bhaynes', '{}/etc/config.ini'.format(scidb_path)],
+                cwd=scidb_path,
+                stderr=subprocess.STDOUT))
+            self.wfile.write(subprocess.check_output([
+                'bin/iquery', '-anp', str(self.server.arguments.scidb_port), '-q',
+                'scan(SciDB__Demo__Vectors)'],
+                cwd=scidb_path,
                 stderr=subprocess.STDOUT))
 
             self.send_response(200)

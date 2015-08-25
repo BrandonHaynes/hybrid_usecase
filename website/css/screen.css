@@ -1,3 +1,29 @@
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+	border: solid rgb(51, 51, 51) 1px !important;
+}
+
+div.details-modal {
+	width: 1200px;
+}
+
+div.details-modal div.diagram {
+	text-align: center;
+}
+
+img.myria-diagram {
+	width: 375px;
+}
+
+img.scidb-diagram {
+	margin-top: 50px;
+	width: 500px;
+}
+
+img.execution {
+	width: 480px;
+	margin-top: 40px;
+}
+
 .details {
 	font-size: 50%;
 	position: relative;
@@ -11,11 +37,28 @@
 	border-right: 2px solid #888;
 }
 
-#hybridtext-details .code-container:first-child {
+#hybridtext-details .code-container.original,
+#hybridbinary-details .code-container.original {
+	height: 660px !important;
+}
+
+#hybridtext-details .code-container:first-child,
+#hybridbinary-details .code-container:first-child {
+	height: 250px;
+}
+#hybridtext-details .code-container,
+#hybridbinary-details .code-container {
 	height: 200px;
 }
-#hybridtext-details .code-container {
-	height: 300px;
+
+div.transfer-arrow {
+	text-align: center;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+img.transfer-arrow {
+	height: 100px;
 }
 
 .code-container pre {
@@ -23,18 +66,12 @@
 	border: none;
 }
 
-#scidb-details img {
-	height: 600px;
-	width: 100%;
-	border: 1px solid #888;
-}
-
-.transfer-arrow {
-	height: 100px;
-}
-
 #patients th, #patients td, #results td, #results th {
 	text-align: center;
+}
+
+#patients tbody tr {
+	cursor: pointer;
 }
 
 .bullet .title {

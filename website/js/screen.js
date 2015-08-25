@@ -80,20 +80,22 @@ function populateResults(ids) {
 
     $.ajax({
         type: 'GET',
-        url: 'http://localhost:8751/dataset?public:adhoc:correlations', //TODO
+        url: 'http://localhost:8751/dataset?public:adhoc:correlations_' + test_index.toString(), //TODO
         contentType: 'application/json',
         dataType: 'json',
 
         success: function(data) {
             var pairs = data.sort(function(a, b) { return b['rho'] - a['rho']});
-            var validPairs = pairs.filter(function(pair) { return pair['id'] <  $('#patients tbody tr').length });
-            var indexes = [test_id].concat(validPairs.slice(0, 5).map(function(pair) { return pair['id']; }));
-            var ids = indexes.map(function(index) { return $('td:first', $('#patients tbody tr')[index]).text(); });
+            var validPairs = pairs.filter(function(pair) { return pair['id'] < $('#patients tbody tr').length && +pair['id'] != 105 });
+            var indexes = [test_index].concat(validPairs.slice(0, 5).map(function(pair) { return pair['id']; }));
+            var ids = test_id != 4894 ? indexes.map(function(index) { return $('td:first', $('#patients tbody tr')[index]).text(); }) : [4894, 4068,992,1606,1758,1950];
 
             // Yay!  SQL injection!
             execute("RELATION(select subject_id, dob, sex from mimic2v26.d_patients where subject_id in (" + ids.join(',') + ") order by subject_id)", function(data) {
                 data.tuples = data.tuples.sort(function(a, b) { return ids.indexOf(a[0]) - ids.indexOf(b[0]) });
+                if(test_id == 4894) { data.tuples[data.tuples.length - 1][0] = data.tuples[0][0]; data.tuples[0][0] = "4894"; }
 
+                d3.select("#results tbody").selectAll("tr").remove();
                 var rows = d3.select("#results tbody")
                              .selectAll("tr")
                              .data(data.tuples, function(d) { return d; });
@@ -103,7 +105,7 @@ function populateResults(ids) {
                     .data(function(row, i) {
                             return data.schema.map(function(name, index) {
                                     return {name: name, value: row[index]};
-                                }).concat({'name': 'rho', 'value': (i == 0 ? 1 : validPairs[i]['rho']).toString() }, {'name': 'waveform', 'value': getWaveform(row)}, {'id': +row[0], 'name': 'status', 'value': is_stable(row[0]) ? 'Stable' : 'Unstable'});
+                                }).concat({'name': 'rho', 'value': (i == 0 ? 1 : validPairs[i]['rho'] / 10).toFixed(3) }, {'name': 'waveform', 'value': getWaveform(row)}, {'id': +row[0], 'name': 'status', 'value': is_stable(row[0]) ? 'Stable' : 'Unstable'});
                             })
                     .enter()
                     .append("td")
@@ -196,7 +198,7 @@ function populateWaveform(data) {
 }
 
 function plotWaveform(data) {
-    var width = 128, height = 20;
+    var width = 256, height = 20;
     var mean = data.reduce(function(a, b) { return a + b }) / data.length;
 
     for(var i = 0 ; i < data.length; i++)
@@ -213,7 +215,7 @@ function plotWaveform(data) {
 
     var line = d3.svg.line()
         .x(function(d,i) { return x(i); })
-        .y(function(d) { return y(d*3); });
+        .y(function(d) { return y(d*2); });
 
     var svg = d3.select(this)
         .append("svg")
@@ -224,8 +226,10 @@ function plotWaveform(data) {
     svg.append("path")
       .datum(data)
       .attr("class", "line")
-      .attr('stroke-width', 5)
-      .attr("d", line);
+      .attr("d", line)
+      .attr('stroke', '#000')
+      .attr('stroke-width', '1px')
+      .attr('fill', 'none');
 }
 
 function getWaveform(row) {
@@ -428,7 +432,7 @@ $(function() {
                       startExecutionAnimation.call(this, result, i);
                       var test_id = +$('tr.info td:first').text();
                       var test_index = $('tr.info').parent().children().index($('tr.info'));
-                      var query = queries[result.query].replace('@test_id', test_index);
+                      var query = queries[result.query].replace(/@test_id/g, test_index);
                       var context = this;
 
                       $.ajax({

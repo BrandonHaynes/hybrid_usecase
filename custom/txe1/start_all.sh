@@ -79,6 +79,12 @@ ssh $COORDINATOR "export PYTHONPATH=$PYTHONPATH:$MYRIA_BASE/stack/myria-python &
                                                    --input-mode random \
                                                    --relation-name vectors"
 
+echo public:adhoc:vectors
+#curl -i -H "Content-Type: application/x-www-form-urlencoded" -X POST -d 'query=t+%3D+load%28%27file%3A%2F%2F%2Fhome%2Fgridsan%2Fbhaynes%2Fwaveform_relation.csv%27%2C+csv%28schema%28id%3Aint%2Ctime%3Aint%2Cvalue%3Afloat%29%29%29%3B+store%28t%2C+public%3Aadhoc%3Avectors%2C+%5Bid%5D%29%3B&language=myrial' http://$COORDINATOR:8090/execute
+curl -i -H "Content-Type: application/x-www-form-urlencoded" -X POST \
+     -d 'query=t+%3D+load%28%27file%3A%2F%2F%2Fhome%2Fgridsan%2Fbhaynes%2Fwaveform_relation.csv%27%2C+csv%28schema%28id%3Aint%2Ctime%3Aint%2Cvalue%3Afloat%29%29%29%3B+store%28t%2C+public%3Aadhoc%3Avectors%2C+%5Bid%5D%29%3B&language=myrial' \
+     http://$COORDINATOR:8090/execute
+
 echo ------------------------------------------------------
 echo Required SSH tunnels:
 echo ------------------------------------------------------

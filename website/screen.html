@@ -17,32 +17,36 @@
   <link rel="stylesheet" type="text/css" href="css/bullet.css" />
   <link rel="stylesheet" type="text/css" href="css/screen.css" />
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-  <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css" />
+  <link rel="stylesheet" type="text/css" href="css/navbar-custom.css" />
 </head>
 
 <body style="overflow-x: hidden">
-  <nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container-fluid">
+
+  <nav class="navbar navbar-default" role="navigation">
       <div class="navbar-header">
-        <a class="navbar-brand" href="#">Heavy Analytics with Automatically-Generated Connectors</a>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+          </button>
+
+          <a class="navbar-brand" href="#">
+              <img src="img/bigdawglogo.png" class="img-responsive">
+              Big Dawg
+          </a>
       </div>
-      <div id="navbar" class="navbar-collapse collapse">
-        <ul class="nav navbar-nav">
-          <li class="active"><a href="index.html">Home</a></li>
-          <li><a href="https://github.com/BrandonHaynes/hybrid_usecase">Repository</a></li>
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Queries <span class="caret"></span></a>
-            <ul class="dropdown-menu">
-              <li><a href="scidb.html">SciDB</a></li>
-              <li><a href="myria.html">Myria</a></li>
-              <li role="separator" class="divider"></li>
-              <li><a href="hybrid-csv.html">SciDB → Myria (text transfer)</a></li>
-              <li><a href="hybrid-binary.html">SciDB → Myria (binary transfer)</a></li>
-            </ul>
-          </li>
-        </ul>
+      <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+              <li class="active"> <a href="#">Home</a>        </li>
+              <li class="">       <a href="#">About</a>       </li>
+              <li class="">       <a href="#">ForeCache</a>   </li>
+              <li class="">       <a href="#">NMF</a>         </li>
+              <li class="">       <a href="#">SeeDB</a>       </li>
+              <li class="">       <a href="#">S-Store</a>     </li>
+              <li class="">       <a href="#">Myria</a>       </li>
+          </ul>
       </div>
-    </div>
   </nav>
 
   <div style="padding-top: 1em">
@@ -77,22 +81,22 @@
             <li id="execute-scidb" class="execute-scidb">
               <div class="icon"></div>
               SciDB Only
-              <span class="details" onclick="$('#scidb-details').modal(); event.stopPropagation();">(details)</span>
+              <span class="details" style="padding-top: 1em; padding-bottom: 1em" onclick="$('#scidb-details').modal(); event.stopPropagation();">(details)</span>
             </li>
             <li id="execute-myria" class="execute-myria">
               <div class="icon"></div>
               Myria Only
-              <span class="details" onclick="$('#myria-details').modal(); event.stopPropagation();">(details)</span>
+              <span class="details" style="padding-top: 1em; padding-bottom: 1em"  onclick="$('#myria-details').modal(); event.stopPropagation();">(details)</span>
             </li>
             <li id="execute-hybrid-csv" class="execute-scidbmyriatext">
               <div class="icon icon-left"></div><div class="icon icon-right"></div>
               SciDB → Myria (text transfer)
-              <span class="details" onclick="$('#hybridtext-details').modal(); event.stopPropagation();">(details)</span>
+              <span class="details" style="padding-top: 1em; padding-bottom: 1em"  onclick="$('#hybridtext-details').modal(); event.stopPropagation();">(details)</span>
             </li>
             <li id="execute-hybrid-binary" class="execute-scidbmyriabinary">
               <div class="icon-left icon"></div><div class="icon-right icon"></div>
               SciDB → Myria (binary transfer)
-              <span class="details" onclick="$('#hybridbinary-details').modal(); event.stopPropagation();">(details)</span>
+              <span class="details" style="padding-top: 1em; padding-bottom: 1em"  onclick="$('#hybridbinary-details').modal(); event.stopPropagation();">(details)</span>
             </li>
           </ul>
         </div>
@@ -134,7 +138,7 @@
   </div>
 
   <div class="modal fade" id="scidb-details">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg details-modal">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -143,8 +147,8 @@
         <div class="modal-body">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-md-6">
-                <img src="images/scidb-execution.png" />
+              <div class="col-md-6 diagram">
+                <img src="images/scidb-execution.png" class="scidb-diagram" />
               </div>
               <div class="col-md-6">
                 <div class="code-container">
@@ -297,7 +301,7 @@ consume(
   </div>
 
   <div class="modal fade" id="myria-details">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg details-modal">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -306,8 +310,8 @@ consume(
         <div class="modal-body">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-md-6">
-                <img src="images/myria-execution.png" />
+              <div class="col-md-6 diagram">
+                <img src="images/myria-execution.png" class="myria-diagram" />
               </div>
               <div class="col-md-6">
                 <div class="code-container">
@@ -338,7 +342,7 @@ def idf(w_ij, w_ijN, N): log(N / w_ijN) * w_ij;
 symbols = empty(id:int, index:int, value:int);
 
 ------------------------------------------------------------------------------------
--- Harr Transform
+-- DWT Transform (Harr basis)
 ------------------------------------------------------------------------------------
 uda HarrTransformGroupBy(alpha, time, x) {{
   [0.0 as coefficient, 0.0 as _sum, 0 as _count, -1 as _time];
@@ -368,7 +372,7 @@ do
 while [from iterations emit $0 &lt; $1];
 
 ------------------------------------------------------------------------------------
--- IDF
+-- TF-IDF
 ------------------------------------------------------------------------------------
 ids = distinct([from symbols emit id]);
 N = [from ids emit count(*) as N];
@@ -406,7 +410,7 @@ correlations = [from products, sum_squares
                 where products.id = sum_squares.id
                 emit products.id as id, product / sum_squares as rho];
 
-sink(correlations);
+store(correlations, correlations);
                   </pre>
                 </div>
               </div>
@@ -419,7 +423,7 @@ sink(correlations);
 
 
   <div class="modal fade" id="hybridtext-details">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg details-modal">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -428,12 +432,121 @@ sink(correlations);
         <div class="modal-body">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-md-6">
-                <img src="images/myria-execution.png" />
+              <div class="col-md-6 diagram">
+                <img class="execution" src="images/hybrid-execution.png" />
               </div>
               <div class="col-md-6">
-                <div class="code-container">
-                  <pre class="prettyprint">
+                <ul class="nav nav-tabs" role="tablist">
+                  <li role="presentation" class="active"><a href="#original-text" aria-controls="original-text" role="tab" data-toggle="tab">Input Query</a></li>
+                  <li role="presentation"><a href="#federated-text" aria-controls="federated-text" role="tab" data-toggle="tab">Federated Query</a></li>
+                </ul>
+
+                <div class="tab-content">
+                  <div role="tabpanel" class="tab-pane active" id="original-text">
+                    <div class="code-container original">
+                      <pre class="prettyprint">
+const test_vector_id: {id};
+
+vectors = scan({SciDB Array});
+
+-------------------------
+-- Constants + Functions
+-------------------------
+const alpha: 1.0;
+const bins: {bins};
+
+def log2(x): log(x) / log(2);
+def mod2(x): x - int(x/2)*2;
+def iif(expression, true_value, false_value):
+    case when expression then true_value
+         else false_value end;
+def bucket(x, high, low): greater(least(int((bins-1) * (x - low) / iif(high != low, high - low, 1)),
+                                bins - 1), 0);
+def difference(current, previous, previous_time, time):
+    iif(previous_time &gt;= 0,
+        (current - previous) * iif(previous_time &lt; time, 1, -1),
+        current);
+def idf(w_ij, w_ijN, N): log(N / w_ijN) * w_ij;
+
+symbols = empty(id:int, index:int, value:int);
+
+------------------------------------------------------------------------------------
+-- DWT Transform (Harr basis)
+------------------------------------------------------------------------------------
+uda HarrTransformGroupBy(alpha, time, x) {{
+  [0.0 as coefficient, 0.0 as _sum, 0 as _count, -1 as _time];
+  [difference(x, coefficient, _time, time), _sum + x, _count + 1, time];
+  [coefficient, _sum / int(_count * alpha)];
+}};
+
+iterations = [from vectors where id = test_vector_id emit 0 as i, int(ceil(log2(count(*)))) as total];
+
+do
+    groups = [from vectors emit
+                     id,
+                     int(floor(time/2)) as time,
+                     HarrTransformGroupBy(alpha, time, value) as [coefficient, mean]];
+
+    coefficients = [from groups emit id, coefficient];
+    range = [from vectors emit max(value) - min(value) as high, min(value) - max(value) as low];
+
+    histogram = [from coefficients, range
+                 emit id,
+                      bucket(coefficient, high, low) as index,
+                      count(bucket(coefficient, high, low)) as value];
+    symbols = symbols + [from histogram, iterations emit id, index + i*bins as index, value];
+    vectors = [from groups emit id, time, mean as value];
+
+    iterations = [from iterations emit $0 + 1, $1];
+while [from iterations emit $0 &lt; $1];
+
+------------------------------------------------------------------------------------
+-- TF-IDF
+------------------------------------------------------------------------------------
+ids = distinct([from symbols emit id]);
+N = [from ids emit count(*) as N];
+frequencies = [from symbols emit value, index, count(*) as frequency];
+
+tfv = [from symbols, frequencies, N
+       where symbols.value = frequencies.value
+       emit id, index, idf(value, frequency, N) as value];
+
+------------------------------------------------------------------------------------
+-- Conditioning
+------------------------------------------------------------------------------------
+moments = [from tfv emit id,
+                         avg(value) as mean,
+                         -- Sample estimator
+                         sqrt((stdev(value)*stdev(value)*count(value))/(count(value)-1)) as std];
+conditioned_tfv = [from tfv, moments
+                   where tfv.id = moments.id
+                   emit id, index, value as v, mean, std, (value - mean) / std as value];
+sum_squares = [from conditioned_tfv
+               emit id, sum(pow(value, 2)) as sum_squares];
+
+------------------------------------------------------------------------------------
+-- k-NN
+------------------------------------------------------------------------------------
+
+test_vector = [from conditioned_tfv where id = test_vector_id emit *];
+
+products = [from test_vector as x,
+                 conditioned_tfv as y
+                where x.index = y.index
+                emit y.id as id, sum(x.value * y.value) as product];
+
+correlations = [from products, sum_squares
+                where products.id = sum_squares.id
+                emit products.id as id, product / sum_squares as rho];
+
+store(correlations, correlations);
+                          </pre>
+                      </div>
+                  </div>
+                  <div role="tabpanel" class="tab-pane" id="federated-text">
+                    <h3><span class="label label-default">SciDB Subquery</span></h3>
+                    <div class="code-container">
+                      <pre class="prettyprint">
 --------------------------------------------------------------------------
 -- DWT w/ Harr basis using UDA
 --------------------------------------------------------------------------
@@ -448,12 +561,13 @@ store(regrid(scan(transform_7), 1, 2, avg(value) as value, bin128(value) as buck
                   </pre>
                 </div>
                 <div class="transfer-arrow">
-                  <img class="transfer-arrow" src="images/transfer-text" />
+                  <img class="transfer-arrow" src="images/transfer-text.png" />
                 </div>
+                    <h3><span class="label label-default">Myria Subquery</span></h3>
                 <div class="code-container">
                   <pre class="prettyprint">
 ------------------------------------------------------------------------------------
--- IDF
+-- TF-IDF
 ------------------------------------------------------------------------------------
 ids = distinct([from symbols emit id]);
 N = [from ids emit count(*) as N];
@@ -492,7 +606,8 @@ correlations = [from products, sum_squares
                 emit products.id as id, product / sum_squares as rho];
 
 sink(correlations);
-                  </pre>
+                    </pre>
+                  </div>
                 </div>
               </div>
             </div>
@@ -501,10 +616,11 @@ sink(correlations);
       </div>
     </div>
   </div>
+</div>
 
 
   <div class="modal fade" id="hybridbinary-details">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg details-modal">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -513,12 +629,122 @@ sink(correlations);
         <div class="modal-body">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-md-6">
-                <img src="images/myria-execution.png" />
+              <div class="col-md-6 diagram">
+                <img class="execution" src="images/hybrid-execution.png" />
               </div>
               <div class="col-md-6">
-                <div class="code-container">
-                  <pre class="prettyprint">
+
+                <ul class="nav nav-tabs" role="tablist">
+                  <li role="presentation" class="active"><a href="#original-binary" aria-controls="original-binary" role="tab" data-toggle="tab">Input Query</a></li>
+                  <li role="presentation"><a href="#federated-binary" aria-controls="federated-binary" role="tab" data-toggle="tab">Federated Query</a></li>
+                </ul>
+
+                <div class="tab-content">
+                  <div role="tabpanel" class="tab-pane active" id="original-binary">
+                    <div class="code-container original">
+                      <pre class="prettyprint">
+const test_vector_id: {id};
+
+vectors = scan({SciDB Array});
+
+-------------------------
+-- Constants + Functions
+-------------------------
+const alpha: 1.0;
+const bins: {bins};
+
+def log2(x): log(x) / log(2);
+def mod2(x): x - int(x/2)*2;
+def iif(expression, true_value, false_value):
+    case when expression then true_value
+         else false_value end;
+def bucket(x, high, low): greater(least(int((bins-1) * (x - low) / iif(high != low, high - low, 1)),
+                                bins - 1), 0);
+def difference(current, previous, previous_time, time):
+    iif(previous_time &gt;= 0,
+        (current - previous) * iif(previous_time &lt; time, 1, -1),
+        current);
+def idf(w_ij, w_ijN, N): log(N / w_ijN) * w_ij;
+
+symbols = empty(id:int, index:int, value:int);
+
+------------------------------------------------------------------------------------
+-- DWT Transform (Harr basis)
+------------------------------------------------------------------------------------
+uda HarrTransformGroupBy(alpha, time, x) {{
+  [0.0 as coefficient, 0.0 as _sum, 0 as _count, -1 as _time];
+  [difference(x, coefficient, _time, time), _sum + x, _count + 1, time];
+  [coefficient, _sum / int(_count * alpha)];
+}};
+
+iterations = [from vectors where id = test_vector_id emit 0 as i, int(ceil(log2(count(*)))) as total];
+
+do
+    groups = [from vectors emit
+                     id,
+                     int(floor(time/2)) as time,
+                     HarrTransformGroupBy(alpha, time, value) as [coefficient, mean]];
+
+    coefficients = [from groups emit id, coefficient];
+    range = [from vectors emit max(value) - min(value) as high, min(value) - max(value) as low];
+
+    histogram = [from coefficients, range
+                 emit id,
+                      bucket(coefficient, high, low) as index,
+                      count(bucket(coefficient, high, low)) as value];
+    symbols = symbols + [from histogram, iterations emit id, index + i*bins as index, value];
+    vectors = [from groups emit id, time, mean as value];
+
+    iterations = [from iterations emit $0 + 1, $1];
+while [from iterations emit $0 &lt; $1];
+
+------------------------------------------------------------------------------------
+-- TF-IDF
+------------------------------------------------------------------------------------
+ids = distinct([from symbols emit id]);
+N = [from ids emit count(*) as N];
+frequencies = [from symbols emit value, index, count(*) as frequency];
+
+tfv = [from symbols, frequencies, N
+       where symbols.value = frequencies.value
+       emit id, index, idf(value, frequency, N) as value];
+
+------------------------------------------------------------------------------------
+-- Conditioning
+------------------------------------------------------------------------------------
+moments = [from tfv emit id,
+                         avg(value) as mean,
+                         -- Sample estimator
+                         sqrt((stdev(value)*stdev(value)*count(value))/(count(value)-1)) as std];
+conditioned_tfv = [from tfv, moments
+                   where tfv.id = moments.id
+                   emit id, index, value as v, mean, std, (value - mean) / std as value];
+sum_squares = [from conditioned_tfv
+               emit id, sum(pow(value, 2)) as sum_squares];
+
+------------------------------------------------------------------------------------
+-- k-NN
+------------------------------------------------------------------------------------
+
+test_vector = [from conditioned_tfv where id = test_vector_id emit *];
+
+products = [from test_vector as x,
+                 conditioned_tfv as y
+                where x.index = y.index
+                emit y.id as id, sum(x.value * y.value) as product];
+
+correlations = [from products, sum_squares
+                where products.id = sum_squares.id
+                emit products.id as id, product / sum_squares as rho];
+
+store(correlations, correlations);
+                          </pre>
+                      </div>
+                  </div>
+                  <div role="tabpanel" class="tab-pane" id="federated-binary">
+                    <h3><span class="label label-default">SciDB Subquery</span></h3>
+                    <div class="code-container">
+                      <pre class="prettyprint">
 --------------------------------------------------------------------------
 -- DWT w/ Harr basis using UDA
 --------------------------------------------------------------------------
@@ -533,12 +759,13 @@ store(regrid(scan(transform_7), 1, 2, avg(value) as value, bin128(value) as buck
                   </pre>
                 </div>
                 <div class="transfer-arrow">
-                  <img class="transfer-arrow" src="images/transfer-text" />
+                  <img class="transfer-arrow" src="images/transfer-binary.png" />
                 </div>
+                    <h3><span class="label label-default">Myria Subquery</span></h3>
                 <div class="code-container">
                   <pre class="prettyprint">
 ------------------------------------------------------------------------------------
--- IDF
+-- TF-IDF
 ------------------------------------------------------------------------------------
 ids = distinct([from symbols emit id]);
 N = [from ids emit count(*) as N];
@@ -577,7 +804,8 @@ correlations = [from products, sum_squares
                 emit products.id as id, product / sum_squares as rho];
 
 sink(correlations);
-                  </pre>
+                    </pre>
+                  </div>
                 </div>
               </div>
             </div>
@@ -586,5 +814,6 @@ sink(correlations);
       </div>
     </div>
   </div>
+</div>
 </body>
 </html>

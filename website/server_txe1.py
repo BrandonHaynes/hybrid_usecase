@@ -23,9 +23,10 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                    '/details/myria.html', '/details/scidb.html', '/details/hybrid-text.html', '/details/hybrid-binary.html',
                    '/js/index.js', '/js/workflow.js', '/js/bullet.js', '/js/cola.min.js', '/js/cola.js', '/js/screen.js', '/js/jquery-2.1.4.js', '/js/d3.min.js', '/js/bootstrap.min.js', '/js/cola.min.js', '/js/run_prettify.js',
                    '/cola.min.js.map',
-                   '/css/bullet.css', '/css/screen.css', '/css/bootstrap.min.css', '/css/bootstrap-theme.min.css',
+                   '/css/bullet.css', '/css/screen.css', '/css/bootstrap.min.css', '/css/bootstrap-theme.min.css', '/css/navbar-custom.css',
                    '/bullets.json', '/graph.json', '/queries/mapping.json',
                    '/queries/federated.txt', '/queries/myria.txt', '/queries/scidb.txt',
+                   '/images/transfer-text.png', '/images/transfer-binary.png', '/images/hybrid-execution.png', '/images/scidb-execution.png', '/images/myria-execution.png', '/img/bigdawglogo.png',
                    '/favicon.ico']
 
     def do_GET(self):
@@ -47,6 +48,8 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             fields = parse_qs(data)
             self.execute('iquery', fields['query'][0])
         elif '/prepare' in self.path:
+            self.execute('restart', None)
+        elif '/final' in self.path:
             self.execute('restart', None)
         else:
             self.send_response(404)
@@ -104,34 +107,35 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
         elif system == 'restart':
             myria_path = self.server.arguments.myria_path
-            self.wfile.write(subprocess.check_output([
+            body = subprocess.check_output([
                 './kill_all_java_processes.py', os.path.join(myria_path, 'deploy/deployment.config')],
                 cwd=os.path.join(myria_path, 'stack/myria/myriadeploy'),
-                stderr=subprocess.STDOUT))
-            self.wfile.write(subprocess.check_output([
+                stderr=subprocess.STDOUT)
+            body += subprocess.check_output([
                 './launch_cluster.sh', os.path.join(myria_path, 'deploy/deployment.config')],
                 cwd=os.path.join(myria_path, 'stack/myria/myriadeploy'),
-                stderr=subprocess.STDOUT))
+                stderr=subprocess.STDOUT)
 
 
             scidb_path = self.server.arguments.scidb_path
-            self.wfile.write(subprocess.check_output([
+            body +=subprocess.check_output([
                 'bin/scidb.py', 'stop_all', 'bhaynes', '{}/etc/config.ini'.format(scidb_path)],
                 cwd=scidb_path,
-                stderr=subprocess.STDOUT))
-            self.wfile.write(subprocess.check_output([
+                stderr=subprocess.STDOUT)
+            body += subprocess.check_output([
                 'bin/scidb.py', 'start_all', 'bhaynes', '{}/etc/config.ini'.format(scidb_path)],
                 cwd=scidb_path,
-                stderr=subprocess.STDOUT))
-            self.wfile.write(subprocess.check_output([
+                stderr=subprocess.STDOUT)
+            body += subprocess.check_output([
                 'bin/iquery', '-anp', str(self.server.arguments.scidb_port), '-q',
                 'scan(SciDB__Demo__Vectors)'],
                 cwd=scidb_path,
-                stderr=subprocess.STDOUT))
+                stderr=subprocess.STDOUT)
 
             self.send_response(200)
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
+            self.wfile.write(body)
 
         else:
             self.send_response(404)

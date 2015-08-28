@@ -24,6 +24,6 @@
 	"groups":[
     {"leaves":[0, 1], "name": "Discrete Wavelet Transform", "sx":20, "sy":0, "width":280, "height":120, "color":"rgb(255, 127, 0)", "lx": 160, "ly": 20, "class":"dwt-group"},
     {"leaves":[2, 3], "name": "TF-IDF", "sx":320, "sy":0, "width":320, "height":120, "color":"rgb(51, 160, 44)", "lx": 480, "ly": 20, "class":"tfidf-group"},
-    {"leaves":[4, 5], "name": "𝑘-NN", "sx":660, "sy":0, "width":180, "height":120, "color":"rgb(227, 26, 28)", "lx": 750, "ly": 20, "class":"knn-group"}
+    {"leaves":[4, 5], "name": "k-NN", "sx":660, "sy":0, "width":180, "height":120, "color":"rgb(227, 26, 28)", "lx": 750, "ly": 20, "class":"knn-group"}
 	]
 }

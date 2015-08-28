@@ -20,13 +20,13 @@ class DemoTCPServer(SocketServer.TCPServer):
 
 class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     PASSTHROUGH = ['/index.html', '/screen.html', '/myria.html', '/scidb.html', '/hybrid-csv.html', '/hybrid-binary.html',
-                   '/details/myria.html', '/details/scidb.html', '/details/hybrid-text.html', '/details/hybrid-binary.html',
-                   '/js/index.js', '/js/workflow.js', '/js/bullet.js', '/js/cola.min.js', '/js/cola.js', '/js/screen.js', '/js/jquery-2.1.4.js', '/js/d3.min.js', '/js/bootstrap.min.js', '/js/cola.min.js', '/js/run_prettify.js',
+                   '/details/myria.html', '/details/scidb.html', '/details/hybrid-text.html', '/details/hybrid-binary.html', '/backup.html',
+                   '/js/index.js', '/js/workflow.js', '/js/bullet.js', '/js/cola.min.js', '/js/cola.js', '/js/screen.js', '/js/jquery-2.1.4.js', '/js/d3.min.js', '/js/bootstrap.min.js', '/js/cola.min.js', '/js/run_prettify.js', '/js/backup.js',
                    '/cola.min.js.map',
                    '/css/bullet.css', '/css/screen.css', '/css/bootstrap.min.css', '/css/bootstrap-theme.min.css', '/css/navbar-custom.css',
                    '/bullets.json', '/graph.json', '/queries/mapping.json',
                    '/queries/federated.txt', '/queries/myria.txt', '/queries/scidb.txt',
-                   '/images/transfer-text.png', '/images/transfer-binary.png', '/images/hybrid-execution.png', '/images/scidb-execution.png', '/images/myria-execution.png', '/img/bigdawglogo.png',
+                   '/images/transfer-text.png', '/images/transfer-binary.png', '/images/hybrid-execution.png', '/images/scidb-execution.png', '/images/myria-execution.png', '/images/bracket.png', '/images/automatically.png', '/images/transfer-detail.png', '/img/bigdawglogo.png',
                    '/favicon.ico']
 
     def do_GET(self):
@@ -36,6 +36,10 @@ class DemoHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
             self.execute('iquery', urlparse(self.path).query)
         elif self.path.startswith('/dataset'):
             self.execute('myria', urlparse(self.path).query)
+        elif self.path == '/':
+            self.send_response(301)
+            self.send_header('Location', '/screen.html')
+            self.end_headers()
         else:
             self.send_response(404)
             self.end_headers()

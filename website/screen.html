@@ -90,13 +90,20 @@
             </li>
             <li id="execute-hybrid-csv" class="execute-scidbmyriatext">
               <div class="icon icon-left"></div><div class="icon icon-right"></div>
-              SciDB → Myria (text transfer)
+              SciDB → Myria (unoptimized, CSV transfer)
               <span class="details" style="padding-top: 1em; padding-bottom: 1em"  onclick="$('#hybridtext-details').modal(); event.stopPropagation();">(details)</span>
             </li>
             <li id="execute-hybrid-binary" class="execute-scidbmyriabinary">
               <div class="icon-left icon"></div><div class="icon-right icon"></div>
-              SciDB → Myria (binary transfer)
+              SciDB → Myria (optimized, binary transfer)
               <span class="details" style="padding-top: 1em; padding-bottom: 1em"  onclick="$('#hybridbinary-details').modal(); event.stopPropagation();">(details)</span>
+            </li>
+            <li>
+                <div style="margin-left: 170px; text-align: center; width: 200px; position: relative; top: -8px" onclick="$('#transfer-details').modal(); event.stopPropagation();">
+                    <img src="images/bracket.png" class="bracket" style="width: 80px;" /><br />
+                    <img src="images/automatically.png" class="automatic" style="width:200px;" /><br />
+                    <span class="details" style="position: relative; top: -8px; font-size: 14px">(how does this work?)</span>
+                </div>
             </li>
           </ul>
         </div>
@@ -136,6 +143,24 @@
       </div>
     </div>
   </div>
+
+
+  <div class="modal fade" id="transfer-details">
+    <div class="modal-dialog modal-lg details-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h4 class="modal-title">Automatically Generated Database Connectors</h4>
+        </div>
+        <div class="modal-body">
+          <div class="container-fluid" style="text-align: center">
+            <img src="images/transfer-detail.png" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <div class="modal fade" id="scidb-details">
     <div class="modal-dialog modal-lg details-modal">
